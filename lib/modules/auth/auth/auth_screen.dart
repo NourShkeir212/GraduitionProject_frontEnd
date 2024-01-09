@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
+import 'package:hire_me/layout/layout_screen.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
 import '../../../shared/components/components.dart';
 import '../../../shared/network/local/cache_helper.dart';
-import '../../../shared/routes/names.dart';
 import '../../../shared/styles/colors.dart';
 import '../../../shared/var/var.dart';
 import '../components.dart';
@@ -17,6 +17,11 @@ class AuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String? localization;
+   var locale= CacheHelper.getData(key: "LOCALE");
+    if(localization !=""){
+      localization =locale;
+    }
     GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
     GlobalKey<FormState> _signUpFormKey = GlobalKey<FormState>();
     TextEditingController emailController = TextEditingController();
@@ -30,7 +35,8 @@ class AuthScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is AppAuthLoginErrorState) {
             errorSnackBar(
-                message: state.error
+              context: context,
+                message: state.error,
             );
           }
           if (state is AppAuthLoginSuccessState) {
@@ -40,25 +46,31 @@ class AuthScreen extends StatelessWidget {
                   value: state.loginModel.data!.token
               ).then((value) {
                 successSnackBar(
-                    message: "Welcome"
+                    context: context,
+                    message: "Welcome".translate(context)
                 );
                 token = state.loginModel.data!.token!;
-                Get.offNamed(AppRoutes.LAYOUT);
+                navigateAndFinish(context, const LayoutScreen());
               });
             } else {
               token = state.loginModel.data!.token!;
-              successSnackBar(message: "Welcome");
-              Get.offNamed(AppRoutes.LAYOUT);
+              successSnackBar(
+                  message: "Welcome".translate(context),
+                context: context,
+              );
+              navigateAndFinish(context, const LayoutScreen());
             }
           }
           if (state is AppAuthRegisterErrorState) {
             errorSnackBar(
+                context: context,
                 message: state.error
             );
           }
           if (state is AppAuthRegisterSuccessState) {
             successSnackBar(
-              message: "Account Successfully Created",
+              context: context,
+              message: "Account Successfully Created".translate(context),
             );
             AppAuthCubit
                 .get(context)
@@ -67,7 +79,7 @@ class AuthScreen extends StatelessWidget {
         },
         builder: (context, state) {
           var cubit = AppAuthCubit.get(context);
-          String gender = cubit.isMale ? 'Male' : 'Female';
+          String gender = cubit.isMale ? 'Male'.translate(context) : 'Female'.translate(context);
           return Scaffold(
             backgroundColor: AppColors.backgroundGrayColor,
             body: Stack(
@@ -90,8 +102,8 @@ class AuthScreen extends StatelessWidget {
                       width: MediaQuery
                           .of(context)
                           .size
-                          .width - 40,
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                          .width - 35,
+                      margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
@@ -123,7 +135,7 @@ class AuthScreen extends StatelessWidget {
                                 child: Column(
                                   children: [
                                     Text(
-                                        "LOGIN",
+                                        "LOGIN".translate(context),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -156,7 +168,7 @@ class AuthScreen extends StatelessWidget {
                                 child: Column(
                                   children: [
                                     Text(
-                                        "SIGNUP",
+                                        "SIGNUP".translate(context),
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -184,12 +196,14 @@ class AuthScreen extends StatelessWidget {
                               phoneController: phoneController,
                               userNameController: userNameController,
                               passwordController: passwordController,
+                              context : context
                             ),
                           if(!cubit.isSignUpScreen)
                             signInSection(
                               cubit: cubit,
                               emailController: emailController,
                               passwordController: passwordController,
+                              context: context
                             ),
                         ],
                       ),
@@ -204,9 +218,7 @@ class AuthScreen extends StatelessWidget {
                     if (!cubit.isSignUpScreen) {
                       if (emailController.text == "" ||
                           passwordController.text == "") {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content:
-                            Text('Please fill all fields')));
+                        bottomErrorSnackBar(context: context, title: 'Please fill all fields'.translate(context));
                       } else {
                         cubit.isSignUpScreen
                             ? cubit.register(
@@ -228,9 +240,7 @@ class AuthScreen extends StatelessWidget {
                           || userNameController.text == "" ||
                           phoneController.text == ""
                       ) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content:
-                            Text('Please fill all fields')));
+                        bottomErrorSnackBar(context: context, title: 'Please fill all fields'.translate(context));
                       } else {
                         cubit.isSignUpScreen
                             ? cubit.register(

@@ -1,6 +1,11 @@
-abstract class AppSettingsStates {}
+import 'dart:ui';
 
-class AppSettingsInitialState extends AppSettingsStates{}
+abstract class AppSettingsStates {
+
+}
+
+class AppSettingsInitialState extends AppSettingsStates {
+}
 
 
 
@@ -16,3 +21,6 @@ class AppSettingsLogoutErrorState extends AppSettingsStates {
 
   AppSettingsLogoutErrorState({required this.error});
 }
+
+class AppSettingsLangChangeState extends AppSettingsStates {}
+

@@ -1,4 +1,6 @@
-abstract class AppTaskStates{}
+abstract class AppTaskStates{
+
+}
 
 class AppTaskInitialState extends AppTaskStates{}
 
@@ -28,3 +30,4 @@ class AppTaskDeleteCompletedTasksErrorState extends AppTaskStates {
 
   AppTaskDeleteCompletedTasksErrorState({required this.error});
 }
+

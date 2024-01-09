@@ -1,18 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
+import 'package:hire_me/shared/var/var.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import '../../../models/reviews_model.dart';
 import '../../../models/worker_model.dart';
 import '../../../shared/components/components.dart';
-import '../../../shared/constants/consts.dart';
 import '../../../shared/styles/colors.dart';
+import '../../hire/hire_screen.dart';
 import '../../reviews/reviews_screen.dart';
 
 class ProfileInfoDataSection extends StatelessWidget {
   final WorkerDataModel workerModel;
+  final BuildContext context;
 
-  const ProfileInfoDataSection({super.key, required this.workerModel});
+  const ProfileInfoDataSection({super.key, required this.workerModel,required this.context});
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +53,16 @@ class ProfileInfoDataSection extends StatelessWidget {
                         ),
                         const SizedBox(width: 4,),
                         MyButton(
-                          background: workerModel.availability == "available" ? AppColors.mainColor : Colors.grey.shade400,
-                          onPressed: () {},
-                          text: 'Hire me',
+                          background: workerModel.availability == "available"
+                              ? AppColors.mainColor
+                              : AppColors.iconColor,
+                          onPressed: () {
+                            workerModel.availability == "available"
+                                ? navigateTo(
+                                HireScreen(workerModel: workerModel),context)
+                                : bottomErrorSnackBar(context: context, title: "${workerModel.name!} not available",);
+                          },
+                          text: 'Hire me'.translate(context),
                           width: 67.8,
                           height: 30,
                           radius: 50,
@@ -66,14 +76,14 @@ class ProfileInfoDataSection extends StatelessWidget {
                     ),
                     //category
                     Text(
-                      workerModel.category!,
+                      workerModel.category!.translate(context),
                       style: TextStyle(color: Colors.grey[500], fontSize: 13),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
                     //rating and availability
-                    _ratingAndAvailabilitySection()
+                    _ratingAndAvailabilitySection(context)
                   ],
                 ),
               ),
@@ -85,44 +95,46 @@ class ProfileInfoDataSection extends StatelessWidget {
   }
 
   Widget _buildProfileImageSection() {
-    return Visibility(
-      visible: workerModel.profileImage != "images/default_user_image.jpg",
-      replacement: const SizedBox.shrink(),
-      child: GestureDetector(
-        onTap: () {
-          workerModel.profileImage != "images/default_user_image.jpg"
-              ? Get.to(GestureDetector(
-            onTap: () {
-              Get.back();
-            },
-            child: SafeArea(
-              child: Center(
-                child: CustomCachedNetworkImage(
-                  imageUrl:workerModel.profileImage!,
-                  width: double.infinity,
-                  height: 300,
-                  radius: 5,
-                  boxFit: BoxFit.cover,
+    return SafeArea(
+      child: Visibility(
+        visible: workerModel.profileImage != "images/default_user_image.jpg",
+        replacement: const SizedBox.shrink(),
+        child: GestureDetector(
+          onTap: () {
+            workerModel.profileImage != "images/default_user_image.jpg"
+                ? navigateTo(context, GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: SafeArea(
+                child: Center(
+                  child: CustomCachedNetworkImage(
+                    imageUrl:workerModel.profileImage!,
+                    width: double.infinity,
+                    height: 300,
+                    radius: 5,
+                    boxFit: BoxFit.cover,
+                  ),
                 ),
               ),
+            ))
+                : null;
+          },
+          child: Hero(
+            tag: workerModel.profileImage!,
+            child: CustomCachedNetworkImage(
+              imageUrl:workerModel.profileImage!,
+              height: 140,
+              width: 90,
+              radius: 5,
+              boxFit: BoxFit.cover,
             ),
-          ))
-              : null;
-        },
-        child: Hero(
-          tag: workerModel.profileImage!,
-          child: CustomCachedNetworkImage(
-            imageUrl:workerModel.profileImage!,
-            height: 140,
-            width: 90,
-            radius: 5,
-            boxFit: BoxFit.cover,
           ),
         ),
       ),
     );
   }
-  Widget _ratingAndAvailabilitySection(){
+  Widget _ratingAndAvailabilitySection(BuildContext context){
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -141,7 +153,7 @@ class ProfileInfoDataSection extends StatelessWidget {
                 children: [
                   FittedBox(
                     child: Text(
-                      'RATING',
+                      'RATING'.translate(context),
                       style: TextStyle(
                         fontSize: workerModel.profileImage != "images/default_user_image.jpg" ? 10 : 12,
                         fontWeight: FontWeight.w500
@@ -177,13 +189,13 @@ class ProfileInfoDataSection extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                workerModel.availability!.toUpperCase(),
+                workerModel.availability!.translate(context).toUpperCase(),
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: workerModel.profileImage !=
                         "images/default_user_image.jpg"
-                        ? 12
-                        : 14,
+                        ? lang=="ar" ? 20 :12
+                        : lang=="ar" ? 20 : 14,
                     fontWeight: FontWeight.w900),
               ),
             ),
@@ -204,9 +216,9 @@ class BioSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const Text(
-          'About',
-          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+         Text(
+          'About'.translate(context),
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
         ),
         const SizedBox(
           height: 10,
@@ -227,11 +239,12 @@ class ReviewHeaderSection extends StatelessWidget {
       mainAxisAlignment:
       MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          'Reviews',
+         Text(
+          'Reviews'.translate(context),
           style: TextStyle(
               fontSize: 17,
-              fontWeight: FontWeight.w800),
+              fontWeight: FontWeight.w800
+          ),
         ),
         TextButton(
             onPressed: () {
@@ -240,13 +253,13 @@ class ReviewHeaderSection extends StatelessWidget {
                   print('empty');
                 }
               } else {
-                Get.to(()=>ReviewsScreen(reviewsModel: reviewsModel));
+                navigateTo(context,ReviewsScreen(reviewsModel: reviewsModel));
               }
             },
             child: Row(
               children: [
                 Text(
-                  'See all',
+                  'See all'.translate(context),
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: reviewsModel.data!.isEmpty ? Colors.grey[400] : AppColors
@@ -281,7 +294,7 @@ class ReviewsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     reviewsModel.sort((a, b) => b.reviews!.date!.compareTo(a.reviews!.date!));
     return ListView.separated(
-        physics:const NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         addAutomaticKeepAlives: false,
         addRepaintBoundaries: false,
@@ -372,3 +385,5 @@ class WorkerInfo extends StatelessWidget {
     );
   }
 }
+
+

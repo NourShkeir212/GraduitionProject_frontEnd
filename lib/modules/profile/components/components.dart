@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
 import '../../../shared/components/components.dart';
 import '../../../shared/constants/consts.dart';
 import '../../../shared/styles/colors.dart';
@@ -49,7 +49,7 @@ class ProfileDataSection extends StatelessWidget {
                 const SizedBox(width: 15,),
                 Flexible(
                   child: Text(
-                    title == "" ? 'Add your address now' : title,
+                    title == "" ? 'Add your address now'.translate(context) : title,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 3,
                     style: const TextStyle(
@@ -92,49 +92,51 @@ class ProfileImage extends StatelessWidget {
           GestureDetector(
             onTap: () {
               imgUrl != ""
-                  ? Get.to(()=>GestureDetector(
-                onTap: () {
-                  Get.back();
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color: Colors.black.withOpacity(0.9),
-                  child: Center(
-                    child: Hero(
-                      tag: imageName,
-                      child: CachedNetworkImage(
-                        errorWidget: (context, url, error) =>
-                            Container(
-                              height: height,
-                              width: width,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Icon(
-                                gender == "male"
-                                    ? Icons.person_outline
-                                    : Icons.person_2_outlined,
-                                size: 90,
-                              ),
-                            ),
-                        imageUrl: AppConstants.BASE_URL + imgUrl,
-                        fit: BoxFit.cover,
+                  ? navigateTo(
+                  context,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      color: Colors.black.withOpacity(0.9),
+                      child: Center(
+                        child: Hero(
+                          tag: imageName,
+                          child: CachedNetworkImage(
+                            errorWidget: (context, url, error) =>
+                                Container(
+                                  height: height,
+                                  width: width,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: Icon(
+                                    gender == "male"
+                                        ? Icons.person_outline
+                                        : Icons.person_2_outlined,
+                                    size: 90,
+                                  ),
+                                ),
+                            imageUrl: AppConstants.BASE_URL + imgUrl,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ))
+                  ))
                   : null;
             },
             child: Hero(
               tag: imageName,
               child: Container(
-                padding:const EdgeInsets.all(2),
+                padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
-                  border: Border.all(width: 1,color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(110)
+                    border: Border.all(width: 1, color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(110)
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(110),
@@ -205,7 +207,7 @@ class NameAndEditProfileSection extends StatelessWidget {
           ),
         ),
         MyOutLinedButton(
-          text: 'Edit Profile',
+          text: 'Edit profile'.translate(context),
           onPressed: onPressed,
           radius: 8,
         ),

@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hire_me/shared/styles/colors.dart';
 import '../../../models/reviews_model.dart';
 import '../../../models/worker_model.dart';
 import '../../../shared/constants/consts.dart';
@@ -50,7 +52,54 @@ class AppWorkerCubit extends Cubit<AppWorkerStates> {
       emit(AppWorkerGetWorkerErrorState(error: e.toString()));
     }
   }
+
+
+  _addToFavorites({required int id}) async {
+    try {
+      emit(AppWorkerAddToFavoritesLoadingState());
+      var response = await DioHelper.post(
+          url: AppConstants.ADD_TO_FAVORITES,
+          token: token,
+          data: {
+            'worker_id': id.toString()
+          }
+      );
+      if (response!.statusCode == 200) {
+        emit(AppWorkerAddToFavoritesSuccessState(isFavorites: true));
+      }
+    } catch (e) {
+      emit(AppWorkerAddToFavoritesErrorState(error: e.toString()));
+    }
+  }
+
+  _deleteFromFavorites({required int id}) async {
+    try {
+      emit(AppWorkerDeleteFromFavoritesLoadingState());
+      var response = await DioHelper.delete(
+        url: AppConstants.DELETE_FROM_FAVORITES.replaceFirst("{id}", "$id"),
+        token: token,
+      );
+      if (response!.statusCode == 200) {
+        emit(AppWorkerDeleteFromFavoritesSuccessState(isFavorites: false));
+      }
+    } catch (e) {
+      emit(
+          AppWorkerDeleteFromFavoritesErrorState(error: e.toString()));
+    }
+  }
+
+  favoritesFunction({required int id, required bool isFavorites}) async {
+    if (isFavorites) {
+      _deleteFromFavorites(id: id);
+    } else {
+      _addToFavorites(id: id);
+    }
+  }
+
 }
+
+
+
 
 
 

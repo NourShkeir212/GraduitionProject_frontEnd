@@ -1,15 +1,17 @@
 class AppConstants {
 
+
   //Base Router Url
   static String BASE_URL = "http://192.168.1.41:8001/";
 
   //Base Data Url
-  // static String BASE_URL = "http://192.168.43.18:8001/";
+  //static String BASE_URL = "http://192.168.42.69:8001/";
 
   //AUTH
   static String REGISTER = "api/auth/user/register";
   static String LOGIN = "api/auth/user/login";
-  static String LOG_OUT = "api/auth/user/logout";
+  static String LOGOUT_CURRENT_SESSION = "api/auth/user/logout_current_session";
+  static String LOGOUT_ALL_SESSION = "api/auth/user/logout_all_sessions";
 
   //User Profile
   static String PROFILE = "api/user/get_profile";
@@ -44,9 +46,12 @@ class AppConstants {
   //WORKER PROFILE
   static String GET_WORKER = "api/user/worker/get_profile/{id}";
 
+  //SEARCH
+
+  static String SEARCH = 'api/user/workers/search';
+
   //-------------------------------Assets Files---------------------------------//
   static String LOGO_WITH_TEXT_URL = "assets/images/in_app_images/app_logo.png";
   static String LOGO_WITHOUT_TEXT_URL = "assets/images/in_app_images/logo_without_text.png";
-
 
 }

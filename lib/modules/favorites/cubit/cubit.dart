@@ -11,7 +11,7 @@ class AppFavoritesCubit extends Cubit<AppFavoritesStates> {
   static AppFavoritesCubit get(context) => BlocProvider.of(context);
 
   CategoryDetailsModel? workersData;
-  Map<int, bool> favorites = {};
+
 
   deleteFromFavorites({required int id}) async {
     try {
@@ -43,6 +43,10 @@ class AppFavoritesCubit extends Cubit<AppFavoritesStates> {
           favorites.addAll({
             e.id!: true,
           });
+        }
+        if(workersData !=null) {
+          //for sort by the highest rate to lowest
+          workersData!.data!.sort((a, b) => double.parse(b.ratingAverage!).compareTo(double.parse(a.ratingAverage!)));
         }
         emit(AppFavoritesGetSuccessState());
       }

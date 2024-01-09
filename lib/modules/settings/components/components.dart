@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
 
 import '../../../shared/components/components.dart';
 import '../../../shared/styles/colors.dart';
@@ -6,7 +7,7 @@ import '../cubit/settings_lib.dart';
 
 
 class GeneralSection extends StatelessWidget {
-
+  final BuildContext context;
   final AppSettingsCubit cubit;
   final void Function()? languagePressed;
   final void Function()? modePressed;
@@ -20,7 +21,7 @@ class GeneralSection extends StatelessWidget {
     this.modePressed,
     this.changePasswordPressed,
     this.deleteAccountPressed,
-
+    required this.context,
 
   }) : super(key: key);
 
@@ -43,37 +44,37 @@ class GeneralSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'General',
+             Text(
+              'General'.translate(context),
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold
               ),
             ),
             const SizedBox(height: 10),
             Sections(
-              leftTitle: 'Language',
-              rightTitle: 'English',
+              leftTitle: 'Language'.translate(context),
+              rightTitle: 'English'.translate(context),
               onTap: languagePressed,
             ),
             Sections(
-                leftTitle: 'Mode',
-                rightTitle: 'Dark mode',
+                leftTitle: 'Mode'.translate(context),
+                rightTitle: 'Dark mode'.translate(context),
                 onTap: modePressed
             ),
-            const Sections(
-              leftTitle: 'App Version',
+             Sections(
+              leftTitle: 'App Version'.translate(context),
               rightTitle: '1.0',
               rightIconCondition: false,
             ),
             Sections(
-                leftTitle: 'Reset Password',
+                leftTitle: 'Reset Password'.translate(context),
                 rightIconCondition: true,
                 onTap: changePasswordPressed
             ),
             Sections(
-              leftTitle: 'Delete Account',
+              leftTitle: 'Delete Account'.translate(context),
               isDeleteAccount: true,
               onTap: deleteAccountPressed,
             )
@@ -92,7 +93,6 @@ class Sections extends StatelessWidget {
   final bool rightIconCondition;
   final bool rightTitleCondition;
   final bool isDeleteAccount;
-
   const Sections({
     Key? key,
     required this.leftTitle,
@@ -122,17 +122,17 @@ class Sections extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if(rightTitleCondition)
-                      Text(rightTitle, style:  TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textGray1Color,
+                      Text(rightTitle, style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textGray1Color
                       ),
                       ),
                     if(rightIconCondition & rightTitleCondition == true)
                       const SizedBox(width: 10,),
                     if(rightIconCondition)
-                       Icon(
+                      Icon(
                         Icons.arrow_forward_ios,
-                        color: AppColors.accentColor,
+                        color: AppColors.mainColor,
                         size: 18,
                       ),
                   ],

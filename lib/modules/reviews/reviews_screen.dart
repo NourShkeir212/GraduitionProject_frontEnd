@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
 import '../../shared/components/components.dart';
 import '../../models/reviews_model.dart';
 import '../../shared/styles/colors.dart';
+import '../../shared/var/var.dart';
 import 'components/components.dart';
 
 class ReviewsScreen extends StatelessWidget {
@@ -17,57 +18,81 @@ class ReviewsScreen extends StatelessWidget {
     reviewsModel.data!.sort((a, b) =>
         b.reviews!.date!.compareTo(a.reviews!.date!));
     return Scaffold(
-      appBar:  myAppBar(
-          title: 'Reviews',
+      appBar: myAppBar(
+          title: 'Reviews'.translate(context),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: Text(
+              child: lang == "en" ? Text(
                 '(${reviewsModel.data!.length}) Reviews',
                 style: TextStyle(
                   color: AppColors.mainColor,
+                ),
+              ) : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: Row(
+                  children: [
+                    Text(
+                      "(${reviewsModel.data!.length})",
+                      style: TextStyle(
+                          color: AppColors.accentColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18
+                      ),
+                    ),
+                    const SizedBox(width: 3,),
+                    Text(
+                      'Reviews'.translate(context),
+                      style: TextStyle(
+                        color: AppColors.mainColor,
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )
           ]
       ),
-      body: MainBackGroundImage(
-        centerDesign: false,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ReviewsAndRatingSection(
-                  rating: double.parse(reviewsModel.ratingAverage!),
-                  ratingCount: reviewsModel.data!.length,
-                  indicators: indicators,
-                ),
-                ListView.separated(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    addAutomaticKeepAlives: false,
-                    addRepaintBoundaries: false,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: ReviewCard(
-                                reviews: reviewsModel.data![index].reviews!),
-                          ),
-                        ],
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.0),
-                        child: MyDivider(),
-                      );
-                    },
-                    itemCount: reviewsModel.data!.length
-                ),
-              ]
+      body: SafeArea(
+        child: MainBackGroundImage(
+          centerDesign: false,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ReviewsAndRatingSection(
+                    rating: double.parse(reviewsModel.ratingAverage!),
+                    ratingCount: reviewsModel.data!.length,
+                    indicators: indicators,
+                  ),
+                  ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      addAutomaticKeepAlives: false,
+                      addRepaintBoundaries: false,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ReviewCard(
+                                  reviews: reviewsModel.data![index].reviews!),
+                            ),
+                          ],
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          child: MyDivider(),
+                        );
+                      },
+                      itemCount: reviewsModel.data!.length
+                  ),
+                ]
+            ),
           ),
         ),
       ),
@@ -76,7 +101,7 @@ class ReviewsScreen extends StatelessWidget {
 
   calculateTheRatings({required List<ProgressBarIndicator> indicators}) {
     // Initialize a map to store the count of each rate
-    Map<int, int> rateCounts = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+    Map<int, int> rateCounts = {5: 0, 4: 0, 3: 0, 2: 0, 1: 0, 0: 0};
 
     // Count the occurrences of each rate
     // Count the occurrences of each rate

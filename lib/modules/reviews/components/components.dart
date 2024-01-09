@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hire_me/shared/var/var.dart';
 import '../../../models/reviews_model.dart';
 import '../../../shared/components/components.dart';
-import '../../../shared/constants/consts.dart';
 import '../../../shared/styles/colors.dart';
 
 class ReviewCard extends StatelessWidget {
@@ -45,7 +45,7 @@ class ReviewCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          timeAgo(DateTime.parse(reviews.date!)),
+                          timeAgo(date: DateTime.parse(reviews.date!),lang: lang),
                           style:
                           TextStyle(color: Colors.grey[400], fontSize: 10),
                         ),
@@ -66,7 +66,7 @@ class ReviewCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 5.0),
             child: Align(
-                alignment: Alignment.centerLeft,
+                alignment:lang =="en" ? Alignment.centerLeft :Alignment.centerRight,
                 child: ExpandableTextWidget(text: reviews.comment!)),
           )
         ],
@@ -124,10 +124,10 @@ class ReviewsAndRatingSection extends StatelessWidget {
   }
 }
 
-
 class ProgressBarIndicator extends StatelessWidget {
   final String text;
   final double value;
+
   const ProgressBarIndicator({
     super.key,
     required this.text,
@@ -140,7 +140,7 @@ class ProgressBarIndicator extends StatelessWidget {
       children: [
         Expanded(
             flex: 1,
-            child:  Text(
+            child: Text(
               text,
               style: const TextStyle(fontSize: 14),
             )

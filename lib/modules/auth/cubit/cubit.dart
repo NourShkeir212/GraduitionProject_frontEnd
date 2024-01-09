@@ -30,7 +30,7 @@ class AppAuthCubit extends Cubit<AppAuthStates> {
             'password': password
           }
       );
-      if (response != null) {
+      if (response!.statusCode == 200) {
         loginModel = LoginModel.fromJson(response.data);
         emit(AppAuthLoginSuccessState(loginModel: loginModel));
       }
@@ -50,7 +50,7 @@ class AppAuthCubit extends Cubit<AppAuthStates> {
       }
     }
   }
-
+  
 
   void register({
     required String name,
@@ -71,7 +71,7 @@ class AppAuthCubit extends Cubit<AppAuthStates> {
             'password': password
           }
       );
-      if (response != null) {
+      if (response!.statusCode ==201) {
         emit(AppAuthRegisterSuccessState());
       }
     } catch (e) {

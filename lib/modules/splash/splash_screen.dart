@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../../shared/routes/names.dart';
+import 'package:hire_me/shared/components/components.dart';
+import '../../layout/layout_screen.dart';
 import '../../shared/var/var.dart';
+import '../auth/auth/auth_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -18,11 +19,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
 
 
-  String whatPage() {
+  Widget whatPage() {
     if (token == "") {
-      return AppRoutes.AUTH;
+      return AuthScreen();
     } else {
-      return AppRoutes.LAYOUT;
+      return LayoutScreen();
     }
   }
 
@@ -31,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(
         const Duration(seconds: 3),
-            () => Get.offNamed(whatPage())
+            () => navigateAndFinish(context, whatPage())
     );
   }
 
@@ -39,10 +40,13 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Image.asset(
-          "assets/images/in_app_images/app_logo.png",
-          fit: BoxFit.cover,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Center(
+          child: Image.asset(
+            "assets/images/in_app_images/app_logo.png",
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );

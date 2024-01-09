@@ -2,7 +2,8 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:get/get.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
+import 'package:hire_me/shared/var/var.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import '../../models/category_details_model.dart';
 import '../../models/reviews_model.dart';
@@ -30,7 +31,6 @@ class MyAppBarLogo extends StatelessWidget {
   }
 }
 
-
 AppBar myAppBar({
   required String title,
 List<Widget>? actions,
@@ -48,7 +48,7 @@ List<Widget>? actions,
 class MainBackGroundImage extends StatelessWidget {
   final Widget child;
   final bool centerDesign;
-  final textUnderImage;
+  final String textUnderImage;
 
   const MainBackGroundImage(
       {super.key, required this.child, this.centerDesign = true, this.textUnderImage = ''});
@@ -61,12 +61,15 @@ class MainBackGroundImage extends StatelessWidget {
         children: <Widget>[
           Opacity(
             opacity: 0.1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.asset(AppConstants.LOGO_WITH_TEXT_URL),
-                Text(textUnderImage ?? ''),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset(AppConstants.LOGO_WITH_TEXT_URL),
+                  Text(textUnderImage ?? ''),
+                ],
+              ),
             ),
           ),
           Container(
@@ -78,52 +81,76 @@ class MainBackGroundImage extends StatelessWidget {
   }
 }
 
-
-String timeAgo(DateTime d) {
-  Duration diff = DateTime.now().difference(d);
-  if (diff.inDays > 365) {
-    return "${(diff.inDays / 365).floor()} ${(diff.inDays / 365).floor() == 1 ? "year" : "years"} ago";
+String timeAgo({required DateTime date, required String lang}) {
+  Duration diff = DateTime.now().difference(date);
+  if (lang == "ar") {
+    if (diff.inDays > 365) {
+      return "${(diff.inDays / 365).floor()} ${(diff.inDays / 365).floor() == 1 ? "سنة" : "سنوات"} مضت";
+    }
+    if (diff.inDays > 30) {
+      return "${(diff.inDays / 30).floor()} ${(diff.inDays / 30).floor() == 1 ? "شهر" : "أشهر"} مضت";
+    }
+    if (diff.inDays > 7) {
+      return "${(diff.inDays / 7).floor()} ${(diff.inDays / 7).floor() == 1 ? "أسبوع" : "أسابيع"} مضت";
+    }
+    if (diff.inDays > 0) {
+      return "${diff.inDays} ${diff.inDays == 1 ? "يوم" : "أيام"} مضت";
+    }
+    if (diff.inHours > 0) {
+      return "${diff.inHours} ${diff.inHours == 1 ? "ساعة" : "ساعات"} مضت";
+    }
+    if (diff.inMinutes > 0) {
+      return "${diff.inMinutes} ${diff.inMinutes == 1 ? "دقيقة" : "دقائق"} مضت";
+    }
+    return "الآن";
+  } else {
+    if (diff.inDays > 365) {
+      return "${(diff.inDays / 365).floor()} ${(diff.inDays / 365).floor() == 1 ? "year" : "years"} ago";
+    }
+    if (diff.inDays > 30) {
+      return "${(diff.inDays / 30).floor()} ${(diff.inDays / 30).floor() == 1 ? "month" : "months"} ago";
+    }
+    if (diff.inDays > 7) {
+      return "${(diff.inDays / 7).floor()} ${(diff.inDays / 7).floor() == 1 ? "week" : "weeks"} ago";
+    }
+    if (diff.inDays > 0) {
+      return "${diff.inDays} ${diff.inDays == 1 ? "day" : "days"} ago";
+    }
+    if (diff.inHours > 0) {
+      return "${diff.inHours} ${diff.inHours == 1 ? "hour" : "hours"} ago";
+    }
+    if (diff.inMinutes > 0) {
+      return "${diff.inMinutes} ${diff.inMinutes == 1 ? "minute" : "minutes"} ago";
+    }
+    return "just now";
   }
-  if (diff.inDays > 30) {
-    return "${(diff.inDays / 30).floor()} ${(diff.inDays / 30).floor() == 1 ? "month" : "months"} ago";
-  }
-  if (diff.inDays > 7) {
-    return "${(diff.inDays / 7).floor()} ${(diff.inDays / 7).floor() == 1 ? "week" : "weeks"} ago";
-  }
-  if (diff.inDays > 0) {
-    return "${diff.inDays} ${diff.inDays == 1 ? "day" : "days"} ago";
-  }
-  if (diff.inHours > 0) {
-    return "${diff.inHours} ${diff.inHours == 1 ? "hour" : "hours"} ago";
-  }
-  if (diff.inMinutes > 0) {
-    return "${diff.inMinutes} ${diff.inMinutes == 1 ? "minute" : "minutes"} ago";
-  }
-  return "just now";
 }
+
 
 class MyButton extends StatelessWidget {
   final double width;
   final double height;
-  final Color background;
+  final Color? background;
   final bool isUpperCase;
   final double radius;
   final VoidCallback onPressed;
   final String text;
   final Color textColor;
   final double fontSize;
+  final FontWeight? fontWeight;
 
   const MyButton({
     super.key,
     this.width = double.infinity,
     this.height = 40.0,
-    this.background = Colors.white,
+    this.background,
     this.isUpperCase = true,
     this.radius = 3.0,
     required this.onPressed,
     required this.text,
     this.textColor = Colors.white,
     this.fontSize = 14,
+    this.fontWeight
   });
 
   @override
@@ -132,18 +159,23 @@ class MyButton extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(
-          radius,
-        ),
-        color: background == Colors.white ? AppColors.accentColor.withOpacity(0.8) :background,
+          borderRadius: BorderRadius.circular(
+            radius,
+          ),
+          color: background ?? AppColors.accentColor.withOpacity(0.8)
       ),
       child: MaterialButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radius),
+        ),
+        height: height,
         onPressed: onPressed,
         child: Text(
           isUpperCase ? text.toUpperCase() : text,
           style: TextStyle(
-            color: textColor,
-            fontSize: fontSize
+              color: textColor,
+              fontSize: fontSize,
+              fontWeight: fontWeight ?? FontWeight.normal
           ),
         ),
       ),
@@ -153,7 +185,6 @@ class MyButton extends StatelessWidget {
 
 class MyOutLinedButton extends StatelessWidget {
   final double height;
-  final Color background;
   final bool isUpperCase;
   final double radius;
   final VoidCallback onPressed;
@@ -162,7 +193,6 @@ class MyOutLinedButton extends StatelessWidget {
 
   const MyOutLinedButton({super.key,
     this.height = 40.0,
-    this.background = Colors.transparent,
     this.isUpperCase = true,
     this.radius = 3.0,
     required this.onPressed,
@@ -177,7 +207,7 @@ class MyOutLinedButton extends StatelessWidget {
         isUpperCase ? text.toUpperCase() : text,
         style: const TextStyle(
             color: Colors.black,
-          fontSize: 12
+            fontSize: 12
         ),
       ),
     );
@@ -198,8 +228,9 @@ class MyTextField extends StatelessWidget {
   final Color backColor;
   final double radius;
   final int maxLine;
-  final bool isMultiLine;
-  const MyTextField({
+  final bool isWithoutPrefixIcon;
+  final void Function(String)? onChanged;
+   const MyTextField({
     Key? key,
     required this.hintText,
     required this.controller,
@@ -214,7 +245,8 @@ class MyTextField extends StatelessWidget {
     this.backColor = Colors.transparent,
     this.radius = 35.0,
     this.maxLine =1,
-    this.isMultiLine =false,
+    this.isWithoutPrefixIcon =false,
+    this.onChanged
   }) : super(key: key);
 
   @override
@@ -227,6 +259,7 @@ class MyTextField extends StatelessWidget {
             color: backColor
         ),
         child: TextFormField(
+          onChanged:onChanged,
           cursorColor: AppColors.accentColor,
           maxLines: maxLine,
           maxLength: isPhoneNumber ? 9 : null,
@@ -235,7 +268,7 @@ class MyTextField extends StatelessWidget {
           controller: controller,
           validator: validator,
           decoration: InputDecoration(
-              prefixIcon:isMultiLine? null : Icon(
+              prefixIcon:isWithoutPrefixIcon? null : Icon(
                 prefixIcon,
                 color: prefixIconColor,
               ),
@@ -277,40 +310,90 @@ class MyTextField extends StatelessWidget {
 }
 
 //----------------------------snack bars-----------------------
-SnackbarController errorSnackBar({
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> errorSnackBar({
+  required BuildContext context,
   required String message
-}
-    ) {
-  return Get.snackbar(
-    'Error',
-    message,
-    colorText: Colors.white,
-    backgroundColor: Colors.red
+}) {
+ return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppColors.errorColor,
+        content:  Text(message),
+        duration: const Duration(milliseconds: 1000),
+        padding: const EdgeInsets.symmetric(
+            horizontal: 10.0,
+            vertical: 10
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      )
   );
 }
-SnackbarController successSnackBar({
+
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> successSnackBar({
+  required BuildContext context,
   required String message
-}
-    ) {
-  return Get.snackbar(
-      'Success',
-      message,
-      colorText: Colors.white,
-        backgroundColor: AppColors.mainColor
+}) {
+  return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppColors.mainColor,
+        content:  Text(message),
+        duration: const Duration(milliseconds: 1000),
+        padding: const EdgeInsets.symmetric(
+            horizontal: 10.0,
+            vertical: 10
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      )
   );
 }
-SnackbarController warningSnackBar({
+
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> warningSnackBar({
   required String message,
-  required String title,
-}
-    ) {
-  return Get.snackbar(
-      title,
-      message,
-      colorText: Colors.white,
-      backgroundColor: AppColors.accentColor
+  required BuildContext context
+}) {
+  return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppColors.mainColor,
+        content: Text(message),
+        duration: const Duration(milliseconds: 1000),
+        padding: const EdgeInsets.symmetric(
+            horizontal: 10.0,
+            vertical: 10
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      )
   );
 }
+
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> bottomErrorSnackBar({
+  required BuildContext context,
+  required String title,
+  }) {
+  return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppColors.errorColor,
+        content:  Text(title),
+        duration: const Duration(milliseconds: 1000),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10.0,
+          vertical: 10
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      )
+  );
+}
+
 
 class MyDivider extends StatelessWidget {
   const MyDivider({Key? key}) : super(key: key);
@@ -336,7 +419,7 @@ class ExpandableTextWidget extends StatefulWidget {
     required this.text,
     this.size= 14,
     this.color=Colors.grey,
-    this.fontWeight=FontWeight.normal
+    this.fontWeight=FontWeight.normal,
   }) : super(key: key);
 
   @override
@@ -350,11 +433,12 @@ class _ExpandableTextWidgetState extends State<ExpandableTextWidget> {
   late Color color;
   late FontWeight fontWeight;
   bool hiddenText = true;
-  double textHeight = Get.context!.height / 5.63;
+
 
   @override
   void initState() {
     super.initState();
+    double textHeight =50;
     if (widget.text.length > textHeight) {
       firstHalf = widget.text.substring(0, textHeight.toInt());
       secondHalf =
@@ -412,13 +496,13 @@ class _ExpandableTextWidgetState extends State<ExpandableTextWidget> {
 class BigText extends StatelessWidget {
   final Color? color;
   final String text;
-  final double size;
+  final double? size;
   final TextOverflow overflow;
 
   const BigText({
     Key? key,
-    this.color =  Colors.white,
-    this.size = 0,
+    this.color,
+    this.size,
     required this.text,
     this.overflow = TextOverflow.ellipsis,
   }) : super(key: key);
@@ -430,8 +514,8 @@ class BigText extends StatelessWidget {
         maxLines: 1,
         overflow: overflow,
         style: TextStyle(
-            color: color == Colors.white ? color : AppColors.textMainColor ,
-            fontSize: size == 0 ? 20 : size,
+            color: color ?? AppColors.textMainColor,
+            fontSize: size ?? 20,
             fontWeight: FontWeight.w400,
             fontFamily: 'Roboto'
         )
@@ -441,16 +525,16 @@ class BigText extends StatelessWidget {
 class SmallText extends StatelessWidget {
   final Color? color;
   final String text;
-  final double size;
-  final double height;
+  final double? size;
+  final double? height;
   final bool isOverFlow;
   final FontWeight fontWeight;
 
   const SmallText({
     Key? key,
-    this.color = const Color(0xFFccc7c5),
-    this.size = 12,
-    this.height = 1.2,
+    this.color,
+    this.size,
+    this.height,
     this.isOverFlow = false,
     this.fontWeight = FontWeight.normal,
     required this.text,
@@ -463,15 +547,36 @@ class SmallText extends StatelessWidget {
         // maxLines: 2,
         style: TextStyle(
           //overflow:isOverFlow ?TextOverflow.ellipsis,
-            height: height,
-            color: color,
-            fontSize: size == 0 ? 12 : size,
-            fontFamily: 'Roboto',
+            height: height ?? 1.2,
+            color: color ?? const Color(0xFFccc7c5),
+            fontSize: size ?? 12,
             fontWeight: fontWeight
         )
     );
   }
 }
+
+
+void navigateTo(context, widget) => Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => widget,
+  ),
+);
+
+void navigateAndFinish(
+    context,
+    widget,
+    ) =>
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => widget,
+      ),
+          (route) {
+        return false;
+      },
+    );
 
 //----------------------------Dialog----------------------
 Future myCustomDialog({
@@ -494,33 +599,40 @@ Future myCustomDialog({
       btnOkColor: AppColors.mainColor,
       dialogBackgroundColor: AppColors.backgroundGrayColor,
       btnOkOnPress: btnOkOnPress,
-      btnCancelOnPress: () {
-        Get.back();
-      },
-      body: isDeleteAccount ? body :  null,
+      btnCancelOnPress: () {},
+      body: isDeleteAccount ? body : null,
+      btnCancelText: "Cancel".translate(context),
+      btnOkText: "Ok".translate(context)
   ).show();
 }
 
 class MyRatingBarIndicator extends StatelessWidget {
   final double rating;
-  final double iconSize;
-  const MyRatingBarIndicator({super.key,required this.rating,this.iconSize=14});
+  final double? iconSize;
+
+  const MyRatingBarIndicator({
+    super.key,
+    required this.rating,
+    this.iconSize
+  });
 
   @override
   Widget build(BuildContext context) {
     return RatingBarIndicator(
         itemCount: 5,
         rating: rating,
-        itemSize: iconSize,
+        itemSize: iconSize ?? 14,
         unratedColor: Colors.grey[400],
-        itemBuilder: (_, __) =>  Icon(Icons.star, color: AppColors.accentColor,));
+        itemBuilder: (_, __) => Icon(Icons.star, color: AppColors.accentColor,));
   }
 }
 
 class NoDataFount extends StatelessWidget {
-  final String message;
+  final String? message;
 
-  const NoDataFount({super.key, this.message = "There is no data found"});
+  const NoDataFount({
+    super.key,
+    this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -544,11 +656,11 @@ class NoDataFount extends StatelessWidget {
             opacity: 0.3,
             child: FittedBox(
               child: Text(
-                message.toUpperCase(),
+                message ?? "There is no data found".toUpperCase(),
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                     fontSize: 14,
-                  fontWeight: FontWeight.w900
+                    fontWeight: FontWeight.w900
                 ),
               ),
             ),
@@ -563,32 +675,33 @@ class NoDataFount extends StatelessWidget {
 //------------------------------------------worker card
 class CustomCachedNetworkImage extends StatelessWidget {
   final String imageUrl;
-  final double height;
-  final double width;
-  final double radius;
+  final double? height;
+  final double? width;
+  final double? radius;
   final BoxFit boxFit;
+
   const CustomCachedNetworkImage({
     super.key,
     required this.imageUrl,
-    this.height = 130,
-    this.width = 100,
-    this.radius=8,
+    this.height,
+    this.width,
+    this.radius,
     this.boxFit = BoxFit.fill
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 3.0,top: 5.0,bottom: 5.0),
+      padding: const EdgeInsets.only(left: 3.0, top: 5.0, bottom: 5.0),
       child: CachedNetworkImage(
         color: Colors.transparent,
 
-        height: height,
-        width: width,
-        imageUrl: AppConstants.BASE_URL+imageUrl,
+        height: height ?? 130,
+        width: width ?? 100,
+        imageUrl: AppConstants.BASE_URL + imageUrl,
         imageBuilder: (context, imageProvider) =>
             ClipRRect(
-              borderRadius: BorderRadius.circular(radius),
+              borderRadius: BorderRadius.circular(radius ?? 8),
               child: Image(
                 image: imageProvider,
                 fit: boxFit,
@@ -600,7 +713,8 @@ class CustomCachedNetworkImage extends StatelessWidget {
                 color: AppColors.mainColor,
               ),
             ),
-        errorWidget: (context, url, error) => const Icon(Icons.error,size: 30,),
+        errorWidget: (context, url, error) =>
+        const Icon(Icons.error, size: 30,),
       ),
     );
   }
@@ -610,10 +724,13 @@ class BuildWorkerInfoSection extends StatelessWidget {
   final CategoryDetailsDataModel data;
   final bool isFavorites;
   final void Function() onWorkerInfoPressed;
-  const BuildWorkerInfoSection({super.key,
+  final BuildContext context;
+  const BuildWorkerInfoSection({
+    super.key,
     required this.data,
     required this.isFavorites,
-    required this.onWorkerInfoPressed
+    required this.onWorkerInfoPressed,
+    required this.context
   });
 
   @override
@@ -640,19 +757,19 @@ class BuildWorkerInfoSection extends StatelessWidget {
               ),
               if(isFavorites)
                 Text(
-                  data.category!,
+                  data.category!.translate(context),
                   style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.mainColor
+                      color: AppColors.accentColor
                   ),
                 ),
               Text(
-                data.availability!,
+                data.availability!.translate(context),
                 style: TextStyle(
                   fontSize: data.bio! != "" ? 12 : 14,
                   color: data.availability == "available"
                       ? AppColors.mainColor
-                      : AppColors.accentColor,
+                      : AppColors.errorColor,
                 ),
               ),
               if (data.bio! != "")
@@ -687,6 +804,7 @@ class WorkerCard extends StatelessWidget {
   final void Function() onPressed;
   final bool favIconCondition;
   final bool isFavorites;
+  final BuildContext context;
 
   const WorkerCard({
     super.key,
@@ -694,7 +812,8 @@ class WorkerCard extends StatelessWidget {
     required this.onFavoritePressed,
     required this.favIconCondition,
     required this.isFavorites,
-    required this.onPressed
+    required this.onPressed,
+    required this.context
   });
 
   @override
@@ -702,13 +821,11 @@ class WorkerCard extends StatelessWidget {
     return Card(
       child: Container(
         height: data.bio! == "" ? 120 : null,
-        padding: const EdgeInsets.only(
-            left: 5,
-            right: 15
+        padding:  const EdgeInsets.symmetric(
+           horizontal: 8
         ),
         decoration: BoxDecoration(
           color: Colors.white,
-
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
@@ -730,6 +847,7 @@ class WorkerCard extends StatelessWidget {
               ),
             ),
             BuildWorkerInfoSection(
+              context: context,
               data: data, isFavorites: isFavorites,
               onWorkerInfoPressed: onPressed,
             ),
@@ -808,7 +926,7 @@ class BuildUserReviewCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            timeAgo(DateTime.parse(reviews.date!)),
+                            timeAgo(date: DateTime.parse(reviews.date!),lang: lang),
                             style:
                             TextStyle(color: Colors.grey[400], fontSize: 10),
                           ),
@@ -829,7 +947,7 @@ class BuildUserReviewCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 5.0),
               child: Align(
-                alignment: Alignment.centerLeft,
+                alignment:lang =="en" ? Alignment.centerLeft :Alignment.centerRight,
                   child: ExpandableTextWidget(text: reviews.comment!)),
             )
           ],
@@ -838,7 +956,6 @@ class BuildUserReviewCard extends StatelessWidget {
     );
   }
 }
-
 
 class MyLiquidRefresh extends StatelessWidget {
   final Future<void> Function() onRefresh;

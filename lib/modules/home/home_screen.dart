@@ -6,7 +6,11 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MainBackGroundImage(child: Text('Nour'),);
+    return SafeArea(
+        child: MainBackGroundImage(
+            child: Container()
+        )
+    );
   }
 }
 

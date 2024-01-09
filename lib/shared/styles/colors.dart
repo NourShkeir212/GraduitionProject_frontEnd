@@ -4,6 +4,7 @@ class AppColors {
 
   static Color mainColor = HexColor("#899768");
   static Color accentColor = Colors.orange;
+  static Color errorColor = Colors.red.shade900.withOpacity(0.7);
   static Color textMainColor = HexColor("#899768");
   static Color textGray1Color = const Color(0XFFA7BCC7);
   static const Color textGray2Color = Color(0XFF9BB3C0);

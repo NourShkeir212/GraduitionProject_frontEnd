@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/tasks_model.dart';
 import '../../../shared/constants/consts.dart';
 import '../../../shared/network/remote/dio_helper.dart';
+import '../../../shared/styles/colors.dart';
 import '../../../shared/var/var.dart';
 import 'my_order_lib.dart';
 
@@ -33,9 +35,11 @@ class AppTaskCubit extends Cubit<AppTaskStates> {
             completedTasks.add(task);
           } else if (task.tasks!.completeTask == 'not_complete') {
             notCompletedTasks.add(task);
+            //sort from oldest to newest
           }
         }
-
+        notCompletedTasks.sort((a, b) => a.tasks!.date!.compareTo(b.tasks!.date!));
+        completedTasks.sort((a, b) => a.tasks!.date!.compareTo(b.tasks!.date!));
         emit(AppTaskGetTasksSuccessState());
       }
     }
@@ -43,6 +47,8 @@ class AppTaskCubit extends Cubit<AppTaskStates> {
       emit(AppTaskGetTasksErrorState(error: e.toString()));
     }
   }
+
+
 
   //the Future<bool> because of the task has been deleted i just want to return true
   Future<bool> deleteTask({required int taskId}) async {
@@ -80,7 +86,6 @@ class AppTaskCubit extends Cubit<AppTaskStates> {
     emit(AppTaskChangeTabBarIndexState());
   }
 
-
   Future<bool> deleteCompletedTasks() async {
     try {
       emit(AppTaskDeleteCompletedTasksLoadingState());
@@ -89,10 +94,10 @@ class AppTaskCubit extends Cubit<AppTaskStates> {
           token: token
       );
       if (response!.statusCode == 200) {
-        completedTasks =[];
+        completedTasks = [];
         emit(AppTaskDeleteCompletedTasksSuccessState());
         return true;
-      }else{
+      } else {
         return false;
       }
     }

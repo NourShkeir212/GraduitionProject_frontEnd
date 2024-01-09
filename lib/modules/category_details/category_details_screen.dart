@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
 import '../../shared/components/components.dart';
 import '../../shared/styles/colors.dart';
+import '../../shared/var/var.dart';
 import '../worker/worker_screen.dart';
 import 'cubit/category_details_lib.dart';
 class CategoryDetailsScreen extends StatelessWidget {
@@ -22,16 +22,16 @@ class CategoryDetailsScreen extends StatelessWidget {
       child: BlocConsumer<AppCategoryDetailsCubit, AppCategoryDetailsStates>(
         listener: (context, state) {
           if (state is AppCategoryDetailsAddToFavoritesErrorState) {
-            errorSnackBar(message: state.error);
+            errorSnackBar(context: context, message: state.error);
           }
           if (state is AppCategoryDetailsDeleteFromFavoritesErrorState) {
-            errorSnackBar(message: state.error);
+            errorSnackBar(context: context, message: state.error);
           }
           if (state is AppCategoryDetailsAddToFavoritesSuccessState) {
-            successSnackBar(message: 'Added to favorites successfully');
+            successSnackBar(context: context, message: 'Successfully added to favorites'.translate(context));
           }
           if (state is AppCategoryDetailsDeleteFromFavoritesSuccessState) {
-            successSnackBar(message: 'Removed from favorites successfully');
+            successSnackBar(context: context, message: 'Successfully removed from favorites'.translate(context));
           }
           if (kDebugMode) {
             print('object');
@@ -39,79 +39,88 @@ class CategoryDetailsScreen extends StatelessWidget {
         },
         builder: (context, state) {
           var cubit = AppCategoryDetailsCubit.get(context);
-          if (cubit.workersData != null) {
-            cubit.workersData!.data!.sort((a, b) =>
-                double.parse(b.ratingAverage!).compareTo(
-                    double.parse(a.ratingAverage!)));
-          }
+
           String appBarTitle = categoryData['category'];
           return Scaffold(
-              appBar:  myAppBar(
-                  title: appBarTitle,
+              appBar: myAppBar(
+                  title: appBarTitle.translate(context),
                   actions: [
                     const MyAppBarLogo(),
                   ]
               ),
-              body: MainBackGroundImage(
-                centerDesign: false,
-                child: state is AppCategoryDetailsGetLoadingState
-                    ? Center(
-                    child: CircularProgressIndicator(
-                        color: AppColors.mainColor))
-                    : cubit.workersData!.data!.isNotEmpty
-                    ? MyLiquidRefresh(
-                  onRefresh: () async {
-                    cubit.getCategoryDetails(categoryData['id'].toString());
-                  },
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Column(
-                      children: [
-                        if(state is AppCategoryDetailsAddToFavoritesLoadingState)
-                          LinearProgressIndicator(color: AppColors.mainColor,),
-                        if(state is AppCategoryDetailsDeleteFromFavoritesLoadingState)
-                          LinearProgressIndicator(color: AppColors.mainColor,),
-                        Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 16),
-                            child: ListView.separated(
-                                physics: const NeverScrollableScrollPhysics(),
-                                addAutomaticKeepAlives: false,
-                                addRepaintBoundaries: false,
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  return WorkerCard(
-                                    onPressed: () async {
-                                      Get.to(() =>
-                                          WorkerScreen(
-                                              workerId: cubit.workersData!
-                                                  .data![index].id.toString()));
+              body: SafeArea(
+                child: MainBackGroundImage(
+                    centerDesign: false,
+                    child: state is AppCategoryDetailsGetLoadingState
+                        ? Center(
+                        child: CircularProgressIndicator(
+                            color: AppColors.mainColor))
+                        : cubit.workersData!.data!.isNotEmpty
+                        ? MyLiquidRefresh(
+                      onRefresh: () async {
+                        cubit.getCategoryDetails(categoryData['id'].toString());
+                      },
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          children: [
+                            if(state is AppCategoryDetailsAddToFavoritesLoadingState)
+                              LinearProgressIndicator(
+                                color: AppColors.mainColor,),
+                            if(state is AppCategoryDetailsDeleteFromFavoritesLoadingState)
+                              LinearProgressIndicator(
+                                color: AppColors.mainColor,),
+                            Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0, vertical: 16),
+                                child: ListView.separated(
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    addAutomaticKeepAlives: false,
+                                    addRepaintBoundaries: false,
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, index) {
+                                      return WorkerCard(
+                                        context: context,
+                                        onPressed: () async {
+                                          var response = await Navigator.push(
+                                              context, MaterialPageRoute(
+                                            builder: (context) =>
+                                                WorkerScreen(
+                                                  workerId: cubit.workersData!
+                                                      .data![index].id
+                                                      .toString(),
+                                                ),)
+                                          );
+                                          if (response == 'true') {
+                                            cubit.getCategoryDetails(
+                                                categoryData['id']);
+                                          } else {
+
+                                          }
+                                        },
+                                        isFavorites: false,
+                                        data: cubit.workersData!.data![index],
+                                        favIconCondition: favorites[cubit
+                                            .workersData!.data![index].id!] ==
+                                            true,
+                                        onFavoritePressed: () {
+                                          cubit.favoritesFunction(
+                                              id: cubit.workersData!
+                                                  .data![index].id!);
+                                        },
+                                      );
                                     },
-                                    isFavorites: false,
-                                    data: cubit.workersData!.data![index],
-                                    favIconCondition: cubit.favorites[cubit
-                                        .workersData!.data![index].id!] == true,
-                                    onFavoritePressed: () {
-                                      cubit.favoritesFunction(
-                                          id: cubit.workersData!.data![index]
-                                              .id!);
+                                    separatorBuilder: (context, index) {
+                                      return const SizedBox(height: 5,);
                                     },
-                                  );
-                                },
-                                separatorBuilder: (context, index) {
-                                  return const SizedBox(height: 5,);
-                                },
-                                itemCount: cubit.workersData!.data!.length
-                            )
+                                    itemCount: cubit.workersData!.data!.length
+                                )
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                )
-                    : const Center(
-                    child: NoDataFount(
-                        message: "There is no worker in this category"
+                      ),
                     )
+                        : Container()
                 ),
               )
           );

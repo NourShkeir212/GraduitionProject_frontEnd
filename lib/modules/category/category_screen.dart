@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
 import '../../layout/cubit/layout_lib.dart';
 import '../../models/category_model.dart';
 import '../../shared/components/components.dart';
 import '../../shared/constants/consts.dart';
 import '../../shared/styles/colors.dart';
+import '../../shared/var/var.dart';
 import '../category_details/category_details_screen.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -18,35 +19,37 @@ class CategoryScreen extends StatelessWidget {
         listener: (context, state) {},
         builder: (context, state) {
           var cubit = AppLayoutCubit.get(context);
-          return MainBackGroundImage(
-              child: state is AppLayoutGetCategoryLoadingState
-                  ? Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.mainColor,
-                ),
-              )
-                  : cubit.categoryModel != null
-                  ? Padding(
-                padding: const EdgeInsets.only(left: 4.0, right: 4),
-                child: GridView.count(
-                  shrinkWrap: false,
-                  addAutomaticKeepAlives: false,
-                  addRepaintBoundaries: false,
-                  physics: const BouncingScrollPhysics(),
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 13,
-                  crossAxisSpacing: 10,
-                  childAspectRatio: 1 / 1.235,
-                  children: List.generate(
-                    cubit.categoryModel!.data!.length,
-                        (index) =>
-                        BuildGridProduct(
-                          model: cubit.categoryModel!.data![index],
-                        ),
+          return SafeArea(
+            child: MainBackGroundImage(
+                child: state is AppLayoutGetCategoryLoadingState
+                    ? Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.mainColor,
                   ),
-                ),
-              )
-                  : const Center(child: NoDataFount())
+                )
+                    : cubit.categoryModel != null
+                    ? Padding(
+                  padding: const EdgeInsets.only(left: 4.0, right: 4),
+                  child: GridView.count(
+                    shrinkWrap: false,
+                    addAutomaticKeepAlives: false,
+                    addRepaintBoundaries: false,
+                    physics: const BouncingScrollPhysics(),
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 13,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 1 / 1.235,
+                    children: List.generate(
+                      cubit.categoryModel!.data!.length,
+                          (index) =>
+                          BuildGridProduct(
+                            model: cubit.categoryModel!.data![index],
+                          ),
+                    ),
+                  ),
+                )
+                    : Container()
+            ),
           );
         }
     );
@@ -62,14 +65,14 @@ class BuildGridProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map<String,dynamic> categoryData = {
+    Map<String, dynamic> categoryData = {
       'id': model.id!,
       'worker_count': model.category!.workerCount.toString(),
-      'category' : model.category!.name!
+      'category': model.category!.name!
     };
     return GestureDetector(
       onTap: () {
-        Get.to(()=>CategoryDetailsScreen(categoryData:categoryData));
+        navigateTo(context, CategoryDetailsScreen(categoryData: categoryData));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -99,21 +102,22 @@ class BuildGridProduct extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.mainColor,
-                        ),
-                ),
+                placeholder: (context, url) =>
+                    Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.mainColor,
+                      ),
+                    ),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
               const SizedBox(
                 height: 5,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 1.0),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: FittedBox(
                   child: Text(
-                    model.category!.name!,
+                    model.category!.name!.translate(context),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -126,18 +130,40 @@ class BuildGridProduct extends StatelessWidget {
               ),
               const Spacer(),
               Padding(
-                padding: const EdgeInsets.only(left: 1.0),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: FittedBox(
-                  child: Text(
-                    "${model.category!.workerCount.toString()} Worker available",
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
+                    child: lang == "en" ? Text(
+                      "${model.category!.workerCount.toString()} Worker available",
                       overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ) : Row(
+                      children: [
+                        Text(
+                          "${model.category!.workerCount}",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 2,),
+                        Text("Worker available".translate(context),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    )
                 ),
               ),
             ],

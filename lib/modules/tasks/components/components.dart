@@ -1,11 +1,11 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
+import 'package:hire_me/shared/var/var.dart';
 import 'package:intl/intl.dart';
 import '../../../models/tasks_model.dart';
 import '../../../shared/components/components.dart';
-import '../../../shared/notifications/local_notifications.dart';
 import '../../../shared/styles/colors.dart';
 import '../../review/review_screen.dart';
 import '../../worker/worker_screen.dart';
@@ -49,7 +49,7 @@ class TabBarSection extends StatelessWidget {
                   children: [
                     FittedBox(
                       child: Text(
-                          'Scheduled',
+                          'Scheduled'.translate(context),
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -79,7 +79,7 @@ class TabBarSection extends StatelessWidget {
                   children: [
                     FittedBox(
                       child: Text(
-                          'Completed',
+                          'Completed'.translate(context),
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -108,6 +108,78 @@ class TabBarSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.mainColor,
         borderRadius: BorderRadius.circular(50),
+      ),
+    );
+  }
+}
+
+class ShowTasks extends StatelessWidget {
+  final AppTaskCubit cubit;
+  final List<TaskDataModel> taskDataModel;
+
+  const ShowTasks({
+    super.key,
+    required this.taskDataModel,
+    required this.cubit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: ListView.separated(
+            physics: const BouncingScrollPhysics(),
+            addAutomaticKeepAlives: false,
+            addRepaintBoundaries: false,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Container(
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 2, vertical: 2),
+                  child: TaskCard(
+                    taskDataModel: taskDataModel[index],
+                    context :context,
+                    onCancelPressed: () {
+                      myCustomDialog(
+                        context: context,
+                        title: 'Delete task'.translate(context),
+                        desc: 'Are you sure you want to delete this task'.translate(context),
+                        dialogType: DialogType.question,
+                        btnOkOnPress: () async {
+                          // if the task delete then remove it from the list
+                          bool response = await cubit.deleteTask(
+                              taskId: taskDataModel[index].id!);
+                          if (response) {
+                            taskDataModel.removeAt(index);
+                          }
+                        },
+                      );
+                    },
+                    onRatePressed: () async {
+                      var response = await Navigator.push(context,
+                          MaterialPageRoute(builder: (context) =>
+                              ReviewScreen(
+                                  taskDataModel: taskDataModel[index])));
+
+                      if (response == 'rated') {
+                        cubit.getTasks();
+                      } else {
+
+                      }
+                    },
+                    onDetailsPressed: () {
+                      // navigateTo(context, TaskDetailsScreen(
+                      //     taskDataModel: taskDataModel[index]));
+                    },
+                  )
+              );
+            },
+            separatorBuilder: (context, index) {
+              return const SizedBox(height: 15,);
+            },
+            itemCount: taskDataModel.length
+        ),
       ),
     );
   }
@@ -145,13 +217,17 @@ class NoData extends StatelessWidget {
 class TaskCard extends StatelessWidget {
   final void Function() onCancelPressed;
   final void Function() onRatePressed;
+  final void Function() onDetailsPressed;
   final TaskDataModel taskDataModel;
+  final BuildContext context;
 
   const TaskCard({
     super.key,
     required this.taskDataModel,
     required this.onCancelPressed,
     required this.onRatePressed,
+    required this.onDetailsPressed,
+    required this.context
   });
 
   @override
@@ -189,7 +265,7 @@ class TaskCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10,),
-              taskStatus()
+              taskStatus(context)
             ],
           ),
           Container(
@@ -198,7 +274,7 @@ class TaskCard extends StatelessWidget {
             height: 0.8,
             color: Colors.grey[300],
           ),
-          workerInfo(),
+          workerInfo(context),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 10),
             width: double.infinity,
@@ -208,42 +284,82 @@ class TaskCard extends StatelessWidget {
           const SizedBox(height: 10,),
           dateSection(
             icon: FontAwesomeIcons.calendar,
-            title: DateFormat('EEEE, MMMM d, yyyy').format(
-                DateTime.parse(taskDataModel.tasks!.date!)),
+            title: DateFormat('EEEE, MMMM d, yyyy',lang).format(DateTime.parse(taskDataModel.tasks!.date!)),
           ),
           const SizedBox(height: 8,),
           dateSection(
               icon: FontAwesomeIcons.clock,
-              title: "${taskDataModel.tasks!.startTime!} - ${taskDataModel
-                  .tasks!.endTime!}"
+              title: "${taskDataModel.tasks!.startTime!} - ${taskDataModel.tasks!.endTime!}"
           ),
-          const SizedBox(height: 20,),
-          MyButton(
-            background: taskDataModel.tasks!.completeTask == 'complete'
-                ? AppColors.mainColor : Colors.red.shade800 /*const Color.fromRGBO(217, 206, 252, 1)*/,
-            onPressed: taskDataModel.tasks!.completeTask == 'complete'
-                ? onRatePressed
-                : onCancelPressed,
-            text: taskDataModel.tasks!.completeTask == 'complete'
-                ? 'Rate'
-                : 'Cancel',
-            isUpperCase: false,
-            radius: 50,
-            height: 37,
+          const SizedBox(height: 10,),
+          Row(
+            children: [
+              //if the tasks is declined by the worker or still in pending only then user can delete it
+              if(taskDataModel.tasks!.status == "declined" ||
+                  taskDataModel.tasks!.status == "pending")
+                Expanded(
+                  flex: 5,
+                  child: MyButton(
+                    background: taskDataModel.tasks!.status == "pending"
+                        ? AppColors.accentColor
+                        : AppColors.errorColor,
+                    onPressed: onCancelPressed,
+                    text: taskDataModel.tasks!.status == "pending"
+                        ? "Cancel".translate(context)
+                        : "Delete".translate(context),
+                    isUpperCase: false,
+                    radius: 50,
+                    height: 37,
+                  ),
+                ),
+              if(taskDataModel.tasks!.status != "declined")
+                const SizedBox(width: 5,),
+
+              // users can rate only the completed task and the unreviewed tasks
+              if(taskDataModel.tasks!.completeTask == "complete" &&
+                  taskDataModel.tasks!.reviewed == false)
+                Expanded(
+                  flex: 5,
+                  child: MyButton(
+                    onPressed: onRatePressed,
+                    isUpperCase: false,
+                    radius: 50,
+                    height: 37,
+                    background: AppColors.accentColor,
+                    text: 'Rate'.translate(context),
+                  ),
+                ),
+              if(taskDataModel.tasks!.completeTask == "complete" &&
+                  taskDataModel.tasks!.reviewed == false)
+                const SizedBox(width: 5,),
+
+              //if the task is not declined by the worker then the user can go to the details
+              if(taskDataModel.tasks!.status != "declined")
+                Expanded(
+                  flex: 5,
+                  child: MyButton(
+                    onPressed: onDetailsPressed,
+                    isUpperCase: false,
+                    radius: 50,
+                    height: 37,
+                    background: AppColors.mainColor,
+                    text: 'Go to details'.translate(context),
+                  ),
+                ),
+            ],
           ),
-          const SizedBox(height: 5,),
         ],
       ),
     );
   }
 
-  Widget taskStatus(){
+  Widget taskStatus(BuildContext context) {
     return Chip(
       padding: EdgeInsets.zero,
       label: Text(
         taskDataModel.tasks!.completeTask == "complete"
-            ? 'Completed'
-            : taskDataModel.tasks!.status!.toUpperCase(),
+            ? 'COMPLETED'.translate(context).toUpperCase() : taskDataModel
+            .tasks!.status!.translate(context).toUpperCase(),
         style: const TextStyle(
             fontSize: 12, color: Colors.white,
             fontWeight: FontWeight.w600
@@ -252,12 +368,13 @@ class TaskCard extends StatelessWidget {
       backgroundColor: taskDataModel.tasks!.completeTask == "complete"
           ? AppColors.mainColor
           : taskDataModel.tasks!.status! == "pending" ? Colors
-          .orange : AppColors.mainColor,
+          .orange : taskDataModel.tasks!.status! == "declined" ? AppColors
+          .errorColor : AppColors.mainColor,
       side: BorderSide.none,
     );
   }
 
-  Widget workerInfo() {
+  Widget workerInfo(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       titleTextStyle: const TextStyle(
@@ -284,9 +401,10 @@ class TaskCard extends StatelessWidget {
       ),
       trailing: IconButton(
         onPressed: () {
-          Get.to(WorkerScreen(workerId:taskDataModel.worker!.id.toString()));
+          navigateTo(context,
+              WorkerScreen(workerId: taskDataModel.worker!.id.toString()));
         },
-        icon: const Icon(Icons.arrow_forward),
+        icon: Icon(Icons.arrow_forward, color: AppColors.accentColor,),
         color: AppColors.mainColor,
       ),
     );
@@ -316,68 +434,4 @@ class TaskCard extends StatelessWidget {
   }
 }
 
-class Tasks extends StatelessWidget {
-  final AppTaskCubit cubit;
-  final List<TaskDataModel> taskDataModel;
 
-  const Tasks({
-    super.key,
-    required this.taskDataModel,
-    required this.cubit,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-        child: ListView.separated(
-            physics: const BouncingScrollPhysics(),
-            addAutomaticKeepAlives: false,
-            addRepaintBoundaries: false,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              // LocalNotifications.scheduledNotification(
-              //     task: taskDataModel[index]);
-              return Container(
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: 2, vertical: 2),
-                  child: TaskCard(
-                    taskDataModel: taskDataModel[index],
-                    onCancelPressed: () {
-                      myCustomDialog(
-                        context: context,
-                        title: 'Delete Task',
-                        desc: 'Are you sure you want to delete this task',
-                        dialogType: DialogType.question,
-                        btnOkOnPress: () async {
-                          // if the task delete then remove it from the list
-                          bool response = await cubit.deleteTask(
-                              taskId: taskDataModel[index].id!);
-                          if (response) {
-                            taskDataModel.removeAt(index);
-                          }
-                        },
-                      );
-                    },
-                    onRatePressed: () async {
-                      var response = await Get.to(() =>
-                          ReviewScreen(taskDataModel: taskDataModel[index]));
-                      if (response == 'rated') {
-                        cubit.getTasks();
-                      } else {
-
-                      }
-                    },
-                  )
-              );
-            },
-            separatorBuilder: (context, index) {
-              return const SizedBox(height: 15,);
-            },
-            itemCount: taskDataModel.length
-        ),
-      ),
-    );
-  }
-}

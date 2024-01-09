@@ -1,10 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
 import '../../shared/components/components.dart';
 import '../../shared/styles/colors.dart';
 import 'cubit/auth_lib.dart';
-
-
 
 
 
@@ -23,37 +22,43 @@ class TopWidget extends StatelessWidget {
           color: AppColors.mainColor,
         ),
         child: Container(
-          padding: const EdgeInsets.only(top: 90, left: 20),
+          padding:  const EdgeInsets.only(top: 90, left: 20),
           color: AppColors.mainColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              RichText(
-                text: TextSpan(
-                    text: isSignUpScreen ? 'Welcome to' : "Welcome",
-                    style:  TextStyle(
-                      fontSize: 25,
-                      letterSpacing: 2,
-                      color: AppColors.accentColor
-                    ),
-                    children: [
-                      TextSpan(
-                        text: isSignUpScreen ?  ' HireMe,' : ' Back,',
-                        style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: RichText(
+                  text: TextSpan(
+                      text: isSignUpScreen ? 'Welcome to'.translate(context) : "Welcome".translate(context),
+                      style:  TextStyle(
+                        fontSize: 25,
+                        letterSpacing: 2,
+                        color: AppColors.accentColor
                       ),
-                    ]
+                      children: [
+                        TextSpan(
+                          text: isSignUpScreen ?  ' HireMe,'.translate(context)  : ' Back,'.translate(context),
+                          style: const TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ]
+                  ),
                 ),
               ),
               const SizedBox(height: 5,),
-              Text(
-                isSignUpScreen? 'Signup to Continue' : 'Signin to Continue',
-                style: const TextStyle(
-                  letterSpacing: 1,
-                  color: Colors.white,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(
+                  isSignUpScreen? 'SignUp to Continue'.translate(context) : 'SignIn to Continue'.translate(context),
+                  style: const TextStyle(
+                    letterSpacing: 1,
+                    color: Colors.white,
+                  ),
                 ),
               )
             ],
@@ -75,7 +80,7 @@ Widget buildButtonPositioned(
   return Positioned(
       right: 0,
       left: 0,
-      top: isSignUpScreen ? 520 : 400,
+      top: isSignUpScreen ? 525 : 405,
       child: Center(
         child: GestureDetector(
           onTap: onTap,
@@ -137,6 +142,7 @@ Widget signInSection(
       required AppAuthCubit cubit,
       required TextEditingController emailController,
       required TextEditingController passwordController,
+      required BuildContext context
     }) {
   return SingleChildScrollView(
     physics: const BouncingScrollPhysics(),
@@ -146,19 +152,19 @@ Widget signInSection(
         children:
         [
           MyTextField(
-              hintText: 'Email Address',
+              hintText: 'Email address'.translate(context),
               controller: emailController,
               type: TextInputType.emailAddress,
               prefixIcon: Icons.person,
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Email Address must not be empty";
+                  return "Please enter your email address".translate(context);
                 }
                 return null;
               }
           ),
           MyTextField(
-              hintText: 'Password',
+              hintText: 'Password'.translate(context),
               controller: passwordController,
               type: TextInputType.visiblePassword,
               prefixIcon: Icons.lock,
@@ -168,7 +174,7 @@ Widget signInSection(
                   cubit.changePasswordVisibility(),
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Password must not be empty";
+                  return "Please Enter your Password".translate(context);
                 }
                 return null;
               }
@@ -186,7 +192,7 @@ Widget signInSection(
                       }
                   ),
                    Text(
-                    'Remember me',
+                    'Remember me'.translate(context),
                     style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textGray1Color
@@ -197,7 +203,7 @@ Widget signInSection(
               TextButton(
                   onPressed: () {},
                   child: Text(
-                    'Forgot Password ?',
+                    'Forgot your password ?'.translate(context),
                     style: TextStyle(
                         color: AppColors.mainColor,
                         fontSize: 12
@@ -218,6 +224,7 @@ Widget signUpSection({
   required TextEditingController phoneController,
   required TextEditingController passwordController,
   required AppAuthCubit cubit,
+  required BuildContext context
 }) {
   return SingleChildScrollView(
     physics: const BouncingScrollPhysics(),
@@ -227,32 +234,32 @@ Widget signUpSection({
         children:
         [
           MyTextField(
-              hintText: 'User Name',
+              hintText: 'Full name'.translate(context),
               controller: userNameController,
               type: TextInputType.name,
               prefixIcon: Icons.person,
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Username must not be empty";
+                  return "Please Enter your full name".translate(context);
                 }
                 return null;
               }
           ),
           MyTextField(
-              hintText: 'Phone Number ',
+              hintText: 'Phone number'.translate(context),
               controller: phoneController,
               type: TextInputType.phone,
               prefixIcon: Icons.phone,
               isPhoneNumber: true,
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Phone number must not be empty";
+                  return "Please enter your phone number".translate(context);
                 }
                 return null;
               }
           ),
           MyTextField(
-              hintText: 'Email Address',
+              hintText: 'Email address'.translate(context),
               controller: emailController,
               type: TextInputType.emailAddress,
               prefixIcon: Icons.email,
@@ -264,7 +271,7 @@ Widget signUpSection({
               }
           ),
           MyTextField(
-              hintText: 'Password',
+              hintText: 'Password'.translate(context),
               controller: passwordController,
               type: TextInputType.visiblePassword,
               prefixIcon: Icons.lock,
@@ -274,7 +281,7 @@ Widget signUpSection({
                   cubit.changePasswordVisibility(),
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Password must not be empty";
+                  return "Please Enter your Password".translate(context);
                 }
                 return null;
               }
@@ -317,7 +324,7 @@ Widget signUpSection({
                         ),
                       ),
                       Text(
-                        'Male',
+                        'Male'.translate(context),
                         style: TextStyle(
                             color: AppColors.textGray1Color
                         ),
@@ -357,7 +364,7 @@ Widget signUpSection({
                         ),
                       ),
                       Text(
-                        'Female',
+                        'Female'.translate(context),
                         style: TextStyle(
                             color: AppColors.textGray1Color
                         ),

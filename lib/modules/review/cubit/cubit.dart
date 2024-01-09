@@ -15,9 +15,10 @@ class AppReviewCubit extends Cubit<AppReviewStates> {
   double ratingValue = 0.0;
 
   uploadReview({
+    required int taskId,
     required String review,
     required String rate,
-    required String workerId
+    required String workerId,
   }) async {
     try {
       emit(AppReviewUploadLoadingState());
@@ -25,6 +26,7 @@ class AppReviewCubit extends Cubit<AppReviewStates> {
           url: AppConstants.UPLOAD_REVIEW,
           token: token,
           data: {
+            'task_id' :taskId,
             'worker_id': workerId,
             'comment': review,
             'rate': rate,

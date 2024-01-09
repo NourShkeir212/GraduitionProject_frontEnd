@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../shared/constants/consts.dart';
 import '../../../shared/network/local/cache_helper.dart';
@@ -11,12 +12,11 @@ class AppSettingsCubit extends Cubit<AppSettingsStates> {
 
   static AppSettingsCubit get(context) => BlocProvider.of(context);
 
-
   logout() async {
     try {
       emit(AppSettingsLogoutLoadingState());
       var response = await DioHelper.get(
-        url: AppConstants.LOG_OUT,
+        url: AppConstants.LOGOUT_CURRENT_SESSION,
         token: token,
       );
       if (response.statusCode == 200) {
@@ -33,3 +33,6 @@ class AppSettingsCubit extends Cubit<AppSettingsStates> {
   }
 
 }
+
+
+
