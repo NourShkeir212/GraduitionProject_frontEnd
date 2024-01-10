@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_me/shared/Localization/app_localizations.dart';
+
 import '../../shared/components/components.dart';
 import '../../models/reviews_model.dart';
+import '../../shared/shared_cubit/theme_cubit/cubit.dart';
+import '../../shared/shared_cubit/theme_cubit/states.dart';
 import '../../shared/styles/colors.dart';
 import '../../shared/var/var.dart';
 import 'components/components.dart';
@@ -14,92 +18,101 @@ class ReviewsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<ProgressBarIndicator> indicators = [];
-    calculateTheRatings(indicators: indicators);
+
     reviewsModel.data!.sort((a, b) =>
         b.reviews!.date!.compareTo(a.reviews!.date!));
-    return Scaffold(
-      appBar: myAppBar(
-          title: 'Reviews'.translate(context),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: lang == "en" ? Text(
-                '(${reviewsModel.data!.length}) Reviews',
-                style: TextStyle(
-                  color: AppColors.mainColor,
-                ),
-              ) : Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: Row(
-                  children: [
-                    Text(
-                      "(${reviewsModel.data!.length})",
-                      style: TextStyle(
-                          color: AppColors.accentColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18
-                      ),
-                    ),
-                    const SizedBox(width: 3,),
-                    Text(
-                      'Reviews'.translate(context),
+    return BlocBuilder<AppThemeCubit, AppThemeStates>(
+        builder: (context, state) {
+          bool isDark = AppThemeCubit.get(context).isDark!;
+          calculateTheRatings(indicators: indicators,isDark: isDark);
+          return Scaffold(
+            appBar: myAppBar(
+                title: 'Reviews'.translate(context),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: lang == "en" ? Text(
+                      '(${reviewsModel.data!.length}) Reviews',
                       style: TextStyle(
                         color: AppColors.mainColor,
-                        fontWeight: FontWeight.bold
+                      ),
+                    ) : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            "(${reviewsModel.data!.length})",
+                            style: TextStyle(
+                                color: AppColors.accentColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18
+                            ),
+                          ),
+                          const SizedBox(width: 3,),
+                          Text(
+                            'Reviews'.translate(context),
+                            style: TextStyle(
+                                color: AppColors.mainColor,
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            )
-          ]
-      ),
-      body: SafeArea(
-        child: MainBackGroundImage(
-          centerDesign: false,
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ReviewsAndRatingSection(
-                    rating: double.parse(reviewsModel.ratingAverage!),
-                    ratingCount: reviewsModel.data!.length,
-                    indicators: indicators,
-                  ),
-                  ListView.separated(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      addAutomaticKeepAlives: false,
-                      addRepaintBoundaries: false,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ReviewCard(
-                                  reviews: reviewsModel.data![index].reviews!),
-                            ),
-                          ],
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
-                          child: MyDivider(),
-                        );
-                      },
-                      itemCount: reviewsModel.data!.length
-                  ),
+                  )
                 ]
             ),
-          ),
-        ),
-      ),
+            body: SafeArea(
+              child: MainBackGroundImage(
+                centerDesign: false,
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ReviewsAndRatingSection(
+                          isDark: isDark,
+                          rating: double.parse(reviewsModel.ratingAverage!),
+                          ratingCount: reviewsModel.data!.length,
+                          indicators: indicators,
+                        ),
+                        ListView.separated(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            addAutomaticKeepAlives: false,
+                            addRepaintBoundaries: false,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: ReviewCard(
+                                      isDark :isDark,
+                                        reviews: reviewsModel.data![index]
+                                            .reviews!),
+                                  ),
+                                ],
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                child: MyDivider(),
+                              );
+                            },
+                            itemCount: reviewsModel.data!.length
+                        ),
+                      ]
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
     );
   }
 
-  calculateTheRatings({required List<ProgressBarIndicator> indicators}) {
+  calculateTheRatings({required List<ProgressBarIndicator> indicators,required bool isDark}) {
     // Initialize a map to store the count of each rate
     Map<int, int> rateCounts = {5: 0, 4: 0, 3: 0, 2: 0, 1: 0, 0: 0};
 
@@ -124,7 +137,8 @@ class ReviewsScreen extends StatelessWidget {
 
     for (var entry in ratePercentages.entries) {
       indicators.add(
-          ProgressBarIndicator(text: entry.key.toString(), value: entry.value));
+          ProgressBarIndicator(
+            text: entry.key.toString(), value: entry.value, isDark: isDark,));
     }
   }
 }

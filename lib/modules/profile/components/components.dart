@@ -10,7 +10,8 @@ class ProfileDataSection extends StatelessWidget {
   final IconData icon;
   final bool isAddress;
   final bool isClickable;
-  void Function()? onTap;
+  final bool isDark;
+  final void Function()? onTap;
 
   ProfileDataSection({
     Key? key,
@@ -19,6 +20,7 @@ class ProfileDataSection extends StatelessWidget {
     this.isAddress = false,
     this.isClickable = false,
     this.onTap,
+    required this.isDark
 
   }) : super(key: key);
 
@@ -31,7 +33,8 @@ class ProfileDataSection extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 5),
         width: double.infinity,
         decoration: BoxDecoration(
-            color: Colors.blue.shade100.withOpacity(0.2),
+            color: isDark ? Colors.blue.shade300.withOpacity(0.2) : Colors.blue
+                .shade100.withOpacity(0.2),
             borderRadius: BorderRadius.circular(20)
         ),
         child: Padding(
@@ -40,22 +43,26 @@ class ProfileDataSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  backgroundColor: Colors.blue.shade100.withOpacity(0.5),
+                  backgroundColor: isDark ? Colors.blue.shade300.withOpacity(
+                      0.5) : Colors.blue.shade100.withOpacity(0.5),
                   child: Icon(
                     icon,
-                    color: AppColors.mainColor,
+                    color: isDark ? Colors.white : AppColors.mainColor,
                   ),
                 ),
                 const SizedBox(width: 15,),
                 Flexible(
                   child: Text(
-                    title == "" ? 'Add your address now'.translate(context) : title,
+                    title == ""
+                        ? 'Add your address now'.translate(context)
+                        : title,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 3,
-                    style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        overflow: TextOverflow.ellipsis
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      overflow: TextOverflow.ellipsis,
+                      color: isDark ? Colors.grey.shade300 : Colors.black,
                     ),
                   ),
                 ),
@@ -181,10 +188,13 @@ class ProfileImage extends StatelessWidget {
 class NameAndEditProfileSection extends StatelessWidget {
   final String name;
   final void Function() onPressed;
+  final bool isDark;
+
   const NameAndEditProfileSection({
     super.key,
     required this.name,
-    required this.onPressed
+    required this.onPressed,
+    required this.isDark
   });
 
   @override
@@ -199,14 +209,16 @@ class NameAndEditProfileSection extends StatelessWidget {
             name,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
-            style: const TextStyle(
+            style:  TextStyle(
                 overflow: TextOverflow.ellipsis,
                 fontSize: 24,
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.bold,
+              color: isDark ? Colors.grey.shade300 :Colors.black,
             ),
           ),
         ),
         MyOutLinedButton(
+          textColor: isDark ? Colors.white:Colors.black,
           text: 'Edit profile'.translate(context),
           onPressed: onPressed,
           radius: 8,

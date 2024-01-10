@@ -14,8 +14,8 @@ import '../../reviews/reviews_screen.dart';
 class ProfileInfoDataSection extends StatelessWidget {
   final WorkerDataModel workerModel;
   final BuildContext context;
-
-  const ProfileInfoDataSection({super.key, required this.workerModel,required this.context});
+  final bool isDark;
+  const ProfileInfoDataSection({super.key, required this.workerModel,required this.context,required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,9 @@ class ProfileInfoDataSection extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: workerModel.profileImage !=
                                     "images/default_user_image.jpg" ? 14 : 17,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.bold,
+                              color: isDark ? Colors.grey.shade300 : Colors.black
+                            ),
                           ),
                         ),
                         const SizedBox(width: 4,),
@@ -77,13 +79,16 @@ class ProfileInfoDataSection extends StatelessWidget {
                     //category
                     Text(
                       workerModel.category!.translate(context),
-                      style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                      style: TextStyle(
+                          color: isDark ? Colors.grey.shade600 : Colors.grey[500],
+                          fontSize: 13,
+                      ),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
                     //rating and availability
-                    _ratingAndAvailabilitySection(context)
+                    _ratingAndAvailabilitySection(context,isDark)
                   ],
                 ),
               ),
@@ -134,7 +139,7 @@ class ProfileInfoDataSection extends StatelessWidget {
       ),
     );
   }
-  Widget _ratingAndAvailabilitySection(BuildContext context){
+  Widget _ratingAndAvailabilitySection(BuildContext context,bool isDark){
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -143,7 +148,7 @@ class ProfileInfoDataSection extends StatelessWidget {
           child: Container(
             height: 68,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color:isDark ? AppColors.darkMainColor:Colors.grey[100],
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
@@ -156,16 +161,19 @@ class ProfileInfoDataSection extends StatelessWidget {
                       'RATING'.translate(context),
                       style: TextStyle(
                         fontSize: workerModel.profileImage != "images/default_user_image.jpg" ? 10 : 12,
-                        fontWeight: FontWeight.w500
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? Colors.grey.shade300 :Colors.black,
                       ),
                     ),
                   ),
                   Text(
                     //3.50 = 3.5
                     num.parse(workerModel.ratingAverage!).toStringAsFixed(1),
-                    style: const TextStyle(
+                    style:  TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w800),
+                        fontWeight: FontWeight.w800,
+                      color:isDark ? Colors.grey.shade300 :Colors.black,
+                    ),
                   ),
                   MyRatingBarIndicator(rating:  double.parse(workerModel.ratingAverage!),
                   ),
@@ -184,7 +192,7 @@ class ProfileInfoDataSection extends StatelessWidget {
             decoration: BoxDecoration(
               color: workerModel.availability! == 'available'
                   ? AppColors.mainColor
-                  : AppColors.accentColor,
+                  : isDark ?AppColors.errorColor :AppColors.accentColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
@@ -207,8 +215,8 @@ class ProfileInfoDataSection extends StatelessWidget {
 }
 class BioSection extends StatelessWidget {
   final String bio;
-
-  const BioSection({super.key, required this.bio});
+  final bool isDark;
+  const BioSection({super.key, required this.bio,required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -218,20 +226,28 @@ class BioSection extends StatelessWidget {
       children: [
          Text(
           'About'.translate(context),
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+          style:  TextStyle(
+              fontSize: 17, fontWeight: FontWeight.w800,
+            color: isDark ? Colors.grey.shade300 :Colors.black,
+          ),
         ),
         const SizedBox(
           height: 10,
         ),
-        ExpandableTextWidget(text: bio)
+        ExpandableTextWidget(
+            text: bio,
+          color: isDark ? Colors.grey.shade300 :Colors.black,
+        )
       ],
     );
   }
 }
 class ReviewHeaderSection extends StatelessWidget {
   final ReviewsModel reviewsModel;
+  final bool isDark;
 
-  const ReviewHeaderSection({super.key, required this.reviewsModel});
+  const ReviewHeaderSection(
+      {super.key, required this.reviewsModel, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -239,11 +255,12 @@ class ReviewHeaderSection extends StatelessWidget {
       mainAxisAlignment:
       MainAxisAlignment.spaceBetween,
       children: [
-         Text(
+        Text(
           'Reviews'.translate(context),
           style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w800
+            fontSize: 17,
+            fontWeight: FontWeight.w800,
+            color: isDark ? Colors.grey.shade300 : Colors.black,
           ),
         ),
         TextButton(
@@ -253,7 +270,7 @@ class ReviewHeaderSection extends StatelessWidget {
                   print('empty');
                 }
               } else {
-                navigateTo(context,ReviewsScreen(reviewsModel: reviewsModel));
+                navigateTo(context, ReviewsScreen(reviewsModel: reviewsModel));
               }
             },
             child: Row(
@@ -262,8 +279,8 @@ class ReviewHeaderSection extends StatelessWidget {
                   'See all'.translate(context),
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: reviewsModel.data!.isEmpty ? Colors.grey[400] : AppColors
-                          .mainColor
+                      color: reviewsModel.data!.isEmpty ? isDark ? Colors
+                          .grey[500] : Colors.grey[400] : AppColors.mainColor
                   ),
                 ),
                 const SizedBox(
@@ -272,7 +289,8 @@ class ReviewHeaderSection extends StatelessWidget {
                 Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 12,
-                    color: reviewsModel.data!.isEmpty ? Colors.grey[400] : AppColors.mainColor
+                    color: reviewsModel.data!.isEmpty ? isDark ? Colors
+                        .grey[500] : Colors.grey[400] : AppColors.mainColor
                 )
               ],
             ))
@@ -282,12 +300,14 @@ class ReviewHeaderSection extends StatelessWidget {
 }
 class ReviewsSection extends StatelessWidget {
   final String bio;
+  final bool isDark;
   final List<ReviewsDataModel> reviewsModel;
 
   const ReviewsSection({
     super.key,
     required this.reviewsModel,
     required this.bio,
+    required this.isDark
   });
 
   @override
@@ -299,7 +319,7 @@ class ReviewsSection extends StatelessWidget {
         addAutomaticKeepAlives: false,
         addRepaintBoundaries: false,
         itemBuilder: (context, index) {
-          return BuildUserReviewCard(reviews: reviewsModel[index].reviews!);
+          return BuildUserReviewCard(reviews: reviewsModel[index].reviews!,isDark: isDark,);
         },
         separatorBuilder: (context, index) {
           return const SizedBox(height: 10);
@@ -321,6 +341,7 @@ class WorkerInfo extends StatelessWidget {
   final IconData icon;
   final String url;
   final bool isWorkTime;
+  final bool isDark;
 
   const WorkerInfo({
     super.key,
@@ -328,59 +349,67 @@ class WorkerInfo extends StatelessWidget {
     required this.icon,
     this.url = "",
     this.isWorkTime = false,
+    required this.isDark
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 5),
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.grey.withOpacity(0.1)
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: Colors.grey[300]!.withOpacity(0.7),
-            child: Icon(
-              icon,
-              color: AppColors.mainColor,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 10,),
-          Expanded(
-            flex: 10,
-            child: Text(
-              title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600
+    return InkWell(
+      onTap: () {
+        launchUrl(Uri.parse(url));
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 5),
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: isDark ? Colors.grey[700] : Colors.grey.withOpacity(0.1)
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: isDark ? Colors.grey[400] : Colors.grey[300]!
+                  .withOpacity(0.7),
+              child: Icon(
+                icon,
+                color: AppColors.mainColor,
+                size: 20,
               ),
             ),
-          ),
-          if(!isWorkTime)
-            const Spacer(),
-          if(!isWorkTime)
+            const SizedBox(width: 10,),
             Expanded(
-              flex: 1,
-              child: InkWell(
-                onTap: (){
-                  launchUrl(Uri.parse(url));
-                },
-                child: Icon(
-                  Icons.arrow_forward,
-                  color: AppColors.mainColor,
-                  size: 18,
+              flex: 10,
+              child: Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.grey[200] : Colors.black
                 ),
               ),
-            )
-        ],
+            ),
+            if(!isWorkTime)
+              const Spacer(),
+            if(!isWorkTime)
+              Expanded(
+                flex: 1,
+                child: InkWell(
+                  onTap: () {
+                    launchUrl(Uri.parse(url));
+                  },
+                  child: Icon(
+                    Icons.arrow_forward,
+                    color: AppColors.mainColor,
+                    size: 20,
+                  ),
+                ),
+              )
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_me/shared/components/components.dart';
+import 'package:hire_me/shared/shared_cubit/theme_cubit/cubit.dart';
+import 'package:hire_me/shared/shared_cubit/theme_cubit/states.dart';
 import '../../layout/layout_screen.dart';
 import '../../shared/var/var.dart';
 import '../auth/auth/auth_screen.dart';
@@ -39,7 +42,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Center(

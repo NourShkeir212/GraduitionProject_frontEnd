@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hire_me/shared/Localization/app_localizations.dart';
-
+import '../../../shared/Localization/app_localizations.dart';
 import '../../../shared/components/components.dart';
 import '../../../shared/styles/colors.dart';
 import '../cubit/settings_lib.dart';
@@ -13,7 +12,7 @@ class GeneralSection extends StatelessWidget {
   final void Function()? modePressed;
   final void Function()? changePasswordPressed;
   final void Function()? deleteAccountPressed;
-
+  final bool isDark;
   const GeneralSection({
     Key? key,
     required this.cubit,
@@ -22,6 +21,7 @@ class GeneralSection extends StatelessWidget {
     this.changePasswordPressed,
     this.deleteAccountPressed,
     required this.context,
+    required this.isDark,
 
   }) : super(key: key);
 
@@ -34,10 +34,10 @@ class GeneralSection extends StatelessWidget {
         padding: const EdgeInsets.symmetric(
             horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color:isDark ?AppColors.darkMainColor:Colors.white,
           border: Border.all(
               width: 1,
-              color: Colors.grey.shade300
+              color:isDark ?Colors.grey.shade700:Colors.grey.shade200
           ),
         ),
         child: Column(
@@ -47,8 +47,9 @@ class GeneralSection extends StatelessWidget {
              Text(
               'General'.translate(context),
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style:   TextStyle(
                   fontSize: 18,
+                  color:isDark ?Colors.white:Colors.black,
                   fontWeight: FontWeight.bold
               ),
             ),
@@ -57,26 +58,31 @@ class GeneralSection extends StatelessWidget {
               leftTitle: 'Language'.translate(context),
               rightTitle: 'English'.translate(context),
               onTap: languagePressed,
+              isDark: isDark,
             ),
             Sections(
-                leftTitle: 'Mode'.translate(context),
-                rightTitle: 'Dark mode'.translate(context),
-                onTap: modePressed
+              leftTitle: 'Theme'.translate(context),
+              rightTitle: isDark ? "Dark theme".translate(context) : "Light theme".translate(context),
+              onTap: modePressed,
+              isDark: isDark,
             ),
              Sections(
-              leftTitle: 'App Version'.translate(context),
-              rightTitle: '1.0',
-              rightIconCondition: false,
+               leftTitle: 'App Version'.translate(context),
+               rightTitle: '1.0',
+               rightIconCondition: false,
+               isDark: isDark,
             ),
             Sections(
-                leftTitle: 'Reset Password'.translate(context),
-                rightIconCondition: true,
-                onTap: changePasswordPressed
+              leftTitle: 'Reset Password'.translate(context),
+              rightIconCondition: true,
+              onTap: changePasswordPressed,
+              isDark: isDark,
             ),
             Sections(
               leftTitle: 'Delete Account'.translate(context),
               isDeleteAccount: true,
               onTap: deleteAccountPressed,
+              isDark: isDark,
             )
           ],
         ),
@@ -93,6 +99,7 @@ class Sections extends StatelessWidget {
   final bool rightIconCondition;
   final bool rightTitleCondition;
   final bool isDeleteAccount;
+  final bool isDark;
   const Sections({
     Key? key,
     required this.leftTitle,
@@ -101,6 +108,8 @@ class Sections extends StatelessWidget {
     this.rightIconCondition = true,
     this.rightTitleCondition = true,
     this.isDeleteAccount = false,
+    required this.isDark
+
   }) : super(key: key);
 
   @override
@@ -116,7 +125,10 @@ class Sections extends StatelessWidget {
               children: [
                 Text(
                   leftTitle,
-                  style: const TextStyle(fontSize: 14),
+                  style:  TextStyle(
+                      fontSize: 14,
+                      color: isDark ?Colors.white : Colors.black
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -124,7 +136,7 @@ class Sections extends StatelessWidget {
                     if(rightTitleCondition)
                       Text(rightTitle, style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textGray1Color
+                          color:isDark ?Colors.grey[400] :AppColors.textGray1Color
                       ),
                       ),
                     if(rightIconCondition & rightTitleCondition == true)
@@ -132,7 +144,7 @@ class Sections extends StatelessWidget {
                     if(rightIconCondition)
                       Icon(
                         Icons.arrow_forward_ios,
-                        color: AppColors.mainColor,
+                        color:isDark ?AppColors.darkAccentColor: AppColors.accentColor,
                         size: 18,
                       ),
                   ],

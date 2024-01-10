@@ -1,6 +1,6 @@
 {
-  "Dark mode": "الوضع الليلي",
-  "Light mode": "الوضع النهاري",
+  "Dark theme": "الوضع الليلي",
+  "Light theme": "الوضع النهاري",
   "English": "الإنكليزية",
   "Arabic": "العربية",
   "Home": "الصفحة الرئيسية",
@@ -13,7 +13,7 @@
   "Name,location,and industry": "الاسم,الموقع, و العمل",
   "General": "العام",
   "Language": "اللغات",
-  "Mode": "وضع التطبيق",
+  "Theme": "وضع التطبيق",
   "App Version": "نسخة التطبيق",
   "Reset Password": "اعادة تعيين كلمة المرور",
   "Delete Account": "حذف الحساب",

@@ -11,6 +11,9 @@ class AppColors {
   static const Color backgroundGrayColor = Color(0xFFECF3F9);
   static const Color iconColor = Color(0xFFB6C7D1);
 
+  static Color darkBackgroundColor = HexColor("#121212"); // A very dark grey color
+  static Color darkMainColor = HexColor("#2D2D2D"); // A dark grey color
+  static Color darkAccentColor = Colors.deepOrange; // A darker shade of orange
 }
 
 

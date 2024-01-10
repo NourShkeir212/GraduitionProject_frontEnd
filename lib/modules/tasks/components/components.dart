@@ -16,51 +16,54 @@ class TabBarSection extends StatelessWidget {
   final int index;
   final void Function() onScheduledTap;
   final void Function() onCompletedTap;
-
+  final bool isDark;
   const TabBarSection({
     super.key,
     required this.index,
     required this.onScheduledTap,
-    required this.onCompletedTap
+    required this.onCompletedTap,
+    required this.isDark
   });
 
   @override
   Widget build(BuildContext context) {
-    Color leftItemColor = index == 0 ? AppColors.mainColor : Colors.black;
-    Color rightItemColor = index == 1 ? AppColors.mainColor : Colors.black;
+    Color leftItemColor = index == 0 ? AppColors.mainColor :isDark ?Colors.grey.shade400: Colors.black;
+    Color rightItemColor = index == 1 ? AppColors.mainColor :isDark ?Colors.grey.shade400: Colors.black;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Expanded(
-            child: InkWell(
-              highlightColor: Colors.red,
-              onTap: onScheduledTap,
-              child: Container(
-                padding: const EdgeInsets.only(top: 12),
-                height: 50,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: Colors.grey[200]
-                ),
-                child: Column(
-                  children: [
-                    FittedBox(
-                      child: Text(
-                          'Scheduled'.translate(context),
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: leftItemColor
-                          )
+          Container(
+            child: Expanded(
+              child: InkWell(
+                highlightColor: Colors.red,
+                onTap: onScheduledTap,
+                child: Container(
+                  padding: const EdgeInsets.only(top: 12),
+                  height: 50,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: isDark ? Colors.grey.shade800 : Colors.grey.shade200
+                  ),
+                  child: Column(
+                    children: [
+                      FittedBox(
+                        child: Text(
+                            'Scheduled'.translate(context),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: leftItemColor
+                            )
+                        ),
                       ),
-                    ),
-                    const Spacer(),
-                    if(index==0)
-                      underLine()
-                  ],
+                      const Spacer(),
+                      if(index==0)
+                        underLine()
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -73,7 +76,7 @@ class TabBarSection extends StatelessWidget {
                 height: 50,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                    color: Colors.grey[200]
+                    color: isDark ? Colors.grey.shade800 : Colors.grey.shade200
                 ),
                 child: Column(
                   children: [
@@ -116,11 +119,12 @@ class TabBarSection extends StatelessWidget {
 class ShowTasks extends StatelessWidget {
   final AppTaskCubit cubit;
   final List<TaskDataModel> taskDataModel;
-
+  final bool isDark;
   const ShowTasks({
     super.key,
     required this.taskDataModel,
     required this.cubit,
+    required this.isDark
   });
 
   @override
@@ -135,13 +139,14 @@ class ShowTasks extends StatelessWidget {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return Container(
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: 2, vertical: 2),
+                  margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                   child: TaskCard(
+                    isDark: isDark,
                     taskDataModel: taskDataModel[index],
                     context :context,
                     onCancelPressed: () {
                       myCustomDialog(
+                        isDark: isDark,
                         context: context,
                         title: 'Delete task'.translate(context),
                         desc: 'Are you sure you want to delete this task'.translate(context),
@@ -187,8 +192,10 @@ class ShowTasks extends StatelessWidget {
 
 class NoData extends StatelessWidget {
   final AppTaskCubit cubit;
+  final Color backColor;
+  final bool isDark;
 
-  const NoData({super.key, required this.cubit});
+  const NoData({super.key, required this.cubit,required this.backColor,required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -197,6 +204,7 @@ class NoData extends StatelessWidget {
         Expanded(
           flex: 0,
           child: TabBarSection(
+            isDark: isDark,
               index: cubit.tabBarIndex,
               onScheduledTap: () => cubit.changeTabBar(0),
               onCompletedTap: () => cubit.changeTabBar(1)
@@ -220,6 +228,7 @@ class TaskCard extends StatelessWidget {
   final void Function() onDetailsPressed;
   final TaskDataModel taskDataModel;
   final BuildContext context;
+  final bool isDark;
 
   const TaskCard({
     super.key,
@@ -227,7 +236,8 @@ class TaskCard extends StatelessWidget {
     required this.onCancelPressed,
     required this.onRatePressed,
     required this.onDetailsPressed,
-    required this.context
+    required this.context,
+    required this.isDark
   });
 
   @override
@@ -235,11 +245,11 @@ class TaskCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? AppColors.darkMainColor : Colors.white,
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-                color: Colors.grey.shade400,
+                color: isDark ? Colors.grey.shade700 : Colors.grey.shade400,
                 blurRadius: 1,
                 spreadRadius: 1,
                 offset: const Offset(1, 1)
@@ -258,38 +268,43 @@ class TaskCard extends StatelessWidget {
                   taskDataModel.tasks!.description!,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      fontSize: 17
+                      fontSize: 17,
+                      color: isDark ? Colors.grey.shade300 : Colors.black
                   ),
                 ),
               ),
               const SizedBox(width: 10,),
-              taskStatus(context)
+              taskStatus(context, isDark)
             ],
           ),
           Container(
             margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
             width: double.infinity,
             height: 0.8,
-            color: Colors.grey[300],
+            color: isDark ? Colors.grey[700] : Colors.grey[300],
           ),
-          workerInfo(context),
+          workerInfo(context, isDark),
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 10),
+            margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
             width: double.infinity,
             height: 0.8,
-            color: Colors.grey[300],
+            color: isDark ? Colors.grey[700] : Colors.grey[300],
           ),
           const SizedBox(height: 10,),
           dateSection(
+            isDark: isDark,
             icon: FontAwesomeIcons.calendar,
-            title: DateFormat('EEEE, MMMM d, yyyy',lang).format(DateTime.parse(taskDataModel.tasks!.date!)),
+            title: DateFormat('EEEE, MMMM d, yyyy', lang).format(
+                DateTime.parse(taskDataModel.tasks!.date!)),
           ),
           const SizedBox(height: 8,),
           dateSection(
+              isDark: isDark,
               icon: FontAwesomeIcons.clock,
-              title: "${taskDataModel.tasks!.startTime!} - ${taskDataModel.tasks!.endTime!}"
+              title: "${taskDataModel.tasks!.startTime!} - ${taskDataModel
+                  .tasks!.endTime!}"
           ),
           const SizedBox(height: 10,),
           Row(
@@ -300,9 +315,7 @@ class TaskCard extends StatelessWidget {
                 Expanded(
                   flex: 5,
                   child: MyButton(
-                    background: taskDataModel.tasks!.status == "pending"
-                        ? AppColors.accentColor
-                        : AppColors.errorColor,
+                    background: taskDataModel.tasks!.status == "pending" ?isDark?AppColors.errorColor: AppColors.accentColor : AppColors.errorColor,
                     onPressed: onCancelPressed,
                     text: taskDataModel.tasks!.status == "pending"
                         ? "Cancel".translate(context)
@@ -325,7 +338,7 @@ class TaskCard extends StatelessWidget {
                     isUpperCase: false,
                     radius: 50,
                     height: 37,
-                    background: AppColors.accentColor,
+                    background: isDark?AppColors.darkAccentColor:AppColors.accentColor,
                     text: 'Rate'.translate(context),
                   ),
                 ),
@@ -353,28 +366,32 @@ class TaskCard extends StatelessWidget {
     );
   }
 
-  Widget taskStatus(BuildContext context) {
+  Widget taskStatus(BuildContext context, bool isDark) {
     return Chip(
       padding: EdgeInsets.zero,
       label: Text(
         taskDataModel.tasks!.completeTask == "complete"
-            ? 'COMPLETED'.translate(context).toUpperCase() : taskDataModel
-            .tasks!.status!.translate(context).toUpperCase(),
+            ? 'COMPLETED'.translate(context).toUpperCase()
+            : taskDataModel.tasks!.status!.translate(context).toUpperCase(),
         style: const TextStyle(
-            fontSize: 12, color: Colors.white,
-            fontWeight: FontWeight.w600
+          fontSize: 12, color: Colors.white,
+          fontWeight: FontWeight.w600,
         ),
       ),
       backgroundColor: taskDataModel.tasks!.completeTask == "complete"
           ? AppColors.mainColor
-          : taskDataModel.tasks!.status! == "pending" ? Colors
-          .orange : taskDataModel.tasks!.status! == "declined" ? AppColors
-          .errorColor : AppColors.mainColor,
+          : taskDataModel.tasks!.status! == "pending"
+          ? isDark ? AppColors.darkAccentColor
+          : Colors.orange
+          : taskDataModel.tasks!.status! == "declined"
+          ? isDark ? Colors.red.withOpacity(0.8)
+          : AppColors.errorColor
+          : AppColors.mainColor,
       side: BorderSide.none,
     );
   }
 
-  Widget workerInfo(BuildContext context) {
+  Widget workerInfo(BuildContext context, bool isDark) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       titleTextStyle: const TextStyle(
@@ -391,8 +408,9 @@ class TaskCard extends StatelessWidget {
       ),
       title: Text(
         taskDataModel.worker!.name!,
-        style: const TextStyle(
-            fontSize: 17
+        style: TextStyle(
+            fontSize: 17,
+            color: isDark ? Colors.grey[300] : Colors.black
         ),
       ),
       subtitle: MyRatingBarIndicator(
@@ -404,7 +422,8 @@ class TaskCard extends StatelessWidget {
           navigateTo(context,
               WorkerScreen(workerId: taskDataModel.worker!.id.toString()));
         },
-        icon: Icon(Icons.arrow_forward, color: AppColors.accentColor,),
+        icon: Icon(Icons.arrow_forward,
+          color: isDark ? AppColors.darkAccentColor : AppColors.accentColor,),
         color: AppColors.mainColor,
       ),
     );
@@ -412,20 +431,23 @@ class TaskCard extends StatelessWidget {
 
   Widget dateSection({
     required String title,
-    required IconData icon
+    required IconData icon,
+    required bool isDark
   }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 20,),
+        Icon(
+          icon, size: 20, color: isDark ? Colors.grey.shade500 : Colors.black,),
         const SizedBox(width: 5,),
         Flexible(
             child: Text(
               title,
               maxLines: 1,
-              style: const TextStyle(
-                  fontSize: 12,
-                  overflow: TextOverflow.ellipsis
+              style: TextStyle(
+                fontSize: 12,
+                overflow: TextOverflow.ellipsis,
+                color: isDark ? Colors.grey.shade300 : Colors.black,
               ),
             )
         ),

@@ -2,10 +2,10 @@ class AppConstants {
 
 
   //Base Router Url
-  static String BASE_URL = "http://192.168.1.41:8001/";
+  //static String BASE_URL = "http://192.168.1.41:8001/";
 
   //Base Data Url
-  //static String BASE_URL = "http://192.168.42.69:8001/";
+  static String BASE_URL = "http://192.168.42.69:8001/";
 
   //AUTH
   static String REGISTER = "api/auth/user/register";

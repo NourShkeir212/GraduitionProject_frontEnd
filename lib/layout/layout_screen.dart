@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_me/shared/Localization/cubit/cubit.dart';
 import 'package:hire_me/shared/Localization/cubit/states.dart';
 import 'package:hire_me/shared/components/components.dart';
+import 'package:hire_me/shared/shared_cubit/theme_cubit/cubit.dart';
+import 'package:hire_me/shared/shared_cubit/theme_cubit/states.dart';
 import '../modules/search/search_screen.dart';
 import '../shared/constants/consts.dart';
 import '../shared/styles/colors.dart';
@@ -15,9 +17,8 @@ class LayoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContextcontext) {
-
     return BlocProvider(
-      create: (context)=>AppLayoutCubit(),
+      create: (context) => AppLayoutCubit(),
       child: BlocConsumer<AppLayoutCubit, AppLayoutStates>(
         builder: (context, state) {
           List<String> screenTitle = [
@@ -28,72 +29,65 @@ class LayoutScreen extends StatelessWidget {
             'Settings'.translate(context),
           ];
           var cubit = AppLayoutCubit.get(context);
-          return Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                centerTitle: true,
-                leading: InkWell(
-                  onTap: () {
-                    cubit.bottomNavBarCurrentIndex = 0;
-                    cubit.changeBottomNavBar(0);
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage(
-                                AppConstants.LOGO_WITHOUT_TEXT_URL
-                            )
-                        )
+          return BlocBuilder<AppThemeCubit, AppThemeStates>(
+              builder: (context, state) {
+                bool isDark = AppThemeCubit.get(context).isDark!;
+                return Scaffold(
+                    appBar: AppBar(
+                      automaticallyImplyLeading: false,
+                      centerTitle: true,
+                      leading: InkWell(
+                        onTap: () {
+                          cubit.bottomNavBarCurrentIndex = 0;
+                          cubit.changeBottomNavBar(0);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                      AppConstants.LOGO_WITHOUT_TEXT_URL
+                                  )
+                              )
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        screenTitle[cubit.bottomNavBarCurrentIndex],
+                      ),
+                      actions: [
+                        IconButton(
+                          onPressed: () {
+                            navigateTo(context, const SearchScreen());
+                          },
+                          icon: Icon(
+                            Icons.search,
+                            color: AppColors.mainColor,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-                title: Text(
-                  screenTitle[cubit.bottomNavBarCurrentIndex],
-                ),
-                actions: [
-                  // BlocBuilder<AppLocaleCubit,AppLocaleStates>(
-                  //   builder: (context,state) {
-                  //    return IconButton(
-                  //       onPressed: () {
-                  //
-                  //       },
-                  //       icon: Icon(
-                  //         Icons.notifications_active,
-                  //         color: AppColors.mainColor,
-                  //       ),
-                  //     );
-                  //   }
-                  // ),
-                  IconButton(
-                    onPressed: () {
-                     navigateTo(context,const SearchScreen());
-                    },
-                    icon: Icon(
-                      Icons.search,
-                      color: AppColors.mainColor,
+                    bottomNavigationBar: CurvedNavigationBar(
+                      backgroundColor:isDark ? AppColors.darkBackgroundColor: Colors.white,
+                      height: 50,
+                      index: cubit.bottomNavBarCurrentIndex,
+                      color:isDark ?AppColors.darkMainColor : AppColors.mainColor,
+                      onTap: (index) => cubit.changeBottomNavBar(index),
+                      items:  [
+                        Icon(Icons.home, color:isDark ? AppColors.darkAccentColor:Colors.white),
+                        Icon(Icons.favorite_border, color: isDark ? AppColors.darkAccentColor:Colors.white),
+                        Icon(Icons.apps, color: isDark ? AppColors.darkAccentColor:Colors.white),
+                        Icon(Icons.reorder_rounded, color: isDark ? AppColors.darkAccentColor:Colors.white),
+                        Icon(Icons.settings, color: isDark ? AppColors.darkAccentColor:Colors.white),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              bottomNavigationBar: CurvedNavigationBar(
-                backgroundColor: Colors.white,
-                height: 50,
-                index: cubit.bottomNavBarCurrentIndex,
-                color: AppColors.mainColor,
-                onTap: (index) => cubit.changeBottomNavBar(index),
-                items: const [
-                  Icon(Icons.home, color: Colors.white,),
-                  Icon(Icons.favorite_border, color: Colors.white,),
-                  Icon(Icons.apps, color: Colors.white,),
-                  Icon(Icons.reorder_rounded, color: Colors.white,),
-                  Icon(Icons.settings, color: Colors.white,),
-                ],
-              ),
-              body: cubit.screens[cubit.bottomNavBarCurrentIndex]
+                    body: cubit.screens[cubit.bottomNavBarCurrentIndex]
+                );
+              }
+
           );
         },
         listener: (context, state) {},

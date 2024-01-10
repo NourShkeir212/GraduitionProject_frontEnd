@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_me/shared/Localization/app_localizations.dart';
+import 'package:hire_me/shared/shared_cubit/theme_cubit/cubit.dart';
+import 'package:hire_me/shared/shared_cubit/theme_cubit/states.dart';
 import '../../layout/cubit/layout_lib.dart';
 import '../../models/category_model.dart';
 import '../../shared/components/components.dart';
@@ -15,43 +17,49 @@ class CategoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppLayoutCubit, AppLayoutStates>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          var cubit = AppLayoutCubit.get(context);
-          return SafeArea(
-            child: MainBackGroundImage(
-                child: state is AppLayoutGetCategoryLoadingState
-                    ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.mainColor,
-                  ),
-                )
-                    : cubit.categoryModel != null
-                    ? Padding(
-                  padding: const EdgeInsets.only(left: 4.0, right: 4),
-                  child: GridView.count(
-                    shrinkWrap: false,
-                    addAutomaticKeepAlives: false,
-                    addRepaintBoundaries: false,
-                    physics: const BouncingScrollPhysics(),
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 13,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 1 / 1.235,
-                    children: List.generate(
-                      cubit.categoryModel!.data!.length,
-                          (index) =>
-                          BuildGridProduct(
-                            model: cubit.categoryModel!.data![index],
-                          ),
-                    ),
-                  ),
-                )
-                    : Container()
-            ),
-          );
-        }
+    return BlocBuilder<AppThemeCubit,AppThemeStates>(
+      builder: (context,state) {
+        bool isDark = AppThemeCubit.get(context).isDark!;
+        return BlocConsumer<AppLayoutCubit, AppLayoutStates>(
+            listener: (context, state) {},
+            builder: (context, state) {
+              var cubit = AppLayoutCubit.get(context);
+              return SafeArea(
+                child: MainBackGroundImage(
+                    child: state is AppLayoutGetCategoryLoadingState
+                        ? Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.mainColor,
+                      ),
+                    )
+                        : cubit.categoryModel != null
+                        ? Padding(
+                      padding: const EdgeInsets.only(left: 4.0, right: 4),
+                      child: GridView.count(
+                        shrinkWrap: false,
+                        addAutomaticKeepAlives: false,
+                        addRepaintBoundaries: false,
+                        physics: const BouncingScrollPhysics(),
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 13,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 1 / 1.235,
+                        children: List.generate(
+                          cubit.categoryModel!.data!.length,
+                              (index) =>
+                              BuildGridProduct(
+                                model: cubit.categoryModel!.data![index],
+                                isDark:isDark
+                              ),
+                        ),
+                      ),
+                    )
+                        : Container()
+                ),
+              );
+            }
+        );
+      }
     );
   }
 }
@@ -60,8 +68,9 @@ class CategoryScreen extends StatelessWidget {
 class BuildGridProduct extends StatelessWidget {
 
   final CategoryDataModel model;
+  final bool isDark;
 
-  const BuildGridProduct({super.key, required this.model});
+  const BuildGridProduct({super.key, required this.model,required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -77,10 +86,10 @@ class BuildGridProduct extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
+            color:isDark ?Colors.grey[800]: Colors.white,
             boxShadow: [
               BoxShadow(
-                  color: Colors.grey.shade300,
+                  color:isDark ?  Colors.grey.shade700 :Colors.grey.shade400,
                   offset: const Offset(0, 3),
                   blurRadius: 2,
                   spreadRadius: 2)
@@ -120,10 +129,11 @@ class BuildGridProduct extends StatelessWidget {
                     model.category!.name!.translate(context),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:  TextStyle(
                       fontSize: 16.0,
                       height: 1.3,
                       fontWeight: FontWeight.w800,
+                      color: isDark ?Colors.grey[300]:Colors.black
                     ),
                   ),
                 ),
@@ -137,7 +147,7 @@ class BuildGridProduct extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 15,
-                        color: Colors.grey[600],
+                        color: isDark ?Colors.grey[500]:Colors.grey[600],
                         fontWeight: FontWeight.w500,
                         overflow: TextOverflow.ellipsis,
                       ),

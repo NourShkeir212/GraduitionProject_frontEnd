@@ -12,6 +12,7 @@ import '../styles/colors.dart';
 
 
 class MyAppBarLogo extends StatelessWidget {
+
   const MyAppBarLogo({super.key});
 
   @override
@@ -189,7 +190,7 @@ class MyOutLinedButton extends StatelessWidget {
   final double radius;
   final VoidCallback onPressed;
   final String text;
-
+  final Color textColor;
 
   const MyOutLinedButton({super.key,
     this.height = 40.0,
@@ -197,6 +198,7 @@ class MyOutLinedButton extends StatelessWidget {
     this.radius = 3.0,
     required this.onPressed,
     required this.text,
+    this.textColor = Colors.black
   });
 
   @override
@@ -205,9 +207,9 @@ class MyOutLinedButton extends StatelessWidget {
       onPressed: onPressed,
       child: Text(
         isUpperCase ? text.toUpperCase() : text,
-        style: const TextStyle(
-            color: Colors.black,
-            fontSize: 12
+        style:  TextStyle(
+            color: textColor,
+            fontSize: 12,
         ),
       ),
     );
@@ -230,7 +232,9 @@ class MyTextField extends StatelessWidget {
   final int maxLine;
   final bool isWithoutPrefixIcon;
   final void Function(String)? onChanged;
-   const MyTextField({
+  final bool isDark;
+
+  const MyTextField({
     Key? key,
     required this.hintText,
     required this.controller,
@@ -244,9 +248,10 @@ class MyTextField extends StatelessWidget {
     this.prefixIconColor = AppColors.textGray2Color,
     this.backColor = Colors.transparent,
     this.radius = 35.0,
-    this.maxLine =1,
-    this.isWithoutPrefixIcon =false,
-    this.onChanged
+    this.maxLine = 1,
+    this.isWithoutPrefixIcon = false,
+    this.onChanged,
+    required this.isDark,
   }) : super(key: key);
 
   @override
@@ -259,7 +264,7 @@ class MyTextField extends StatelessWidget {
             color: backColor
         ),
         child: TextFormField(
-          onChanged:onChanged,
+          onChanged: onChanged,
           cursorColor: AppColors.accentColor,
           maxLines: maxLine,
           maxLength: isPhoneNumber ? 9 : null,
@@ -267,39 +272,43 @@ class MyTextField extends StatelessWidget {
           keyboardType: type,
           controller: controller,
           validator: validator,
+          style: TextStyle(
+              color: isDark ? Colors.grey[100] : Colors.black
+          ),
           decoration: InputDecoration(
-              prefixIcon:isWithoutPrefixIcon? null : Icon(
+              prefixIcon: isWithoutPrefixIcon ? null : Icon(
                 prefixIcon,
-                color: prefixIconColor,
+                color: isDark ? Colors.grey.shade500 : AppColors.textGray2Color,
               ),
               suffixIcon: suffix != null
                   ? IconButton(
                 onPressed: suffixPressed,
-                icon: Icon(suffix ?? Icons.clear, color: AppColors.textGray2Color,),
+                icon: Icon(
+                  suffix ?? Icons.clear, color: isDark ? Colors.grey[500] : AppColors.textGray2Color),
               ) : null,
               enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                    color: AppColors.textGray2Color,
+                  borderSide:  BorderSide(
+                    color: isDark ? Colors.grey.shade500 : AppColors.textGray2Color
                   ),
                   borderRadius: BorderRadius.circular(radius)
               ),
               errorBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                    color: AppColors.textGray2Color,
+                  borderSide:  BorderSide(
+                    color: isDark ? Colors.grey.shade500 : AppColors.textGray2Color
                   ),
                   borderRadius: BorderRadius.circular(radius)
               ),
               focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                    color: AppColors.textGray2Color,
+                  borderSide:  BorderSide(
+                    color: isDark ? Colors.grey.shade500 : AppColors.textGray2Color
                   ),
                   borderRadius: BorderRadius.circular(radius
                   )
               ),
               hintText: hintText,
-              hintStyle: const TextStyle(
+              hintStyle: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textGray2Color
+                  color: isDark ? Colors.grey[500] : AppColors.textGray2Color
               ),
               contentPadding: const EdgeInsets.all(10)
           ),
@@ -412,13 +421,13 @@ class MyDivider extends StatelessWidget {
 class ExpandableTextWidget extends StatefulWidget {
   final String text;
   final double size;
-  final Color color;
+  final Color? color;
   final FontWeight fontWeight;
   const ExpandableTextWidget({
     Key? key,
     required this.text,
     this.size= 14,
-    this.color=Colors.grey,
+    this.color,
     this.fontWeight=FontWeight.normal,
   }) : super(key: key);
 
@@ -448,7 +457,7 @@ class _ExpandableTextWidgetState extends State<ExpandableTextWidget> {
       secondHalf = "";
     }
     fontSize = widget.size;
-    color = widget.color;
+    color = widget.color??Colors.grey;
     fontWeight =widget.fontWeight;
   }
 
@@ -586,23 +595,31 @@ Future myCustomDialog({
   required String desc,
   required DialogType dialogType,
   void Function()? btnOkOnPress,
-  bool isDeleteAccount = false
+  bool isDeleteAccount = false,
+  required bool isDark
 }) {
   return AwesomeDialog(
-      context: context,
-      dialogType: dialogType,
-      animType: AnimType.topSlide,
-      headerAnimationLoop: false,
-      title: title,
-      desc: desc,
-      btnCancelColor: AppColors.accentColor,
-      btnOkColor: AppColors.mainColor,
-      dialogBackgroundColor: AppColors.backgroundGrayColor,
-      btnOkOnPress: btnOkOnPress,
-      btnCancelOnPress: () {},
-      body: isDeleteAccount ? body : null,
-      btnCancelText: "Cancel".translate(context),
-      btnOkText: "Ok".translate(context)
+    context: context,
+    dialogType: dialogType,
+    animType: AnimType.topSlide,
+    headerAnimationLoop: false,
+    title: title,
+    titleTextStyle: TextStyle(
+      color: isDark ? Colors.grey.shade300 :Colors.black,
+      fontSize: 20
+    ),
+    descTextStyle: TextStyle(
+      color: isDark ? Colors.grey.shade300 :Colors.black,
+    ),
+    desc: desc,
+    btnCancelColor: isDark ? AppColors.darkAccentColor : AppColors.accentColor,
+    btnOkColor: AppColors.mainColor,
+    dialogBackgroundColor: isDark ? AppColors.darkMainColor : AppColors.backgroundGrayColor,
+    btnOkOnPress: btnOkOnPress,
+    btnCancelOnPress: () {},
+    body: isDeleteAccount ? body : null,
+    btnCancelText: "Cancel".translate(context),
+    btnOkText: "Ok".translate(context),
   ).show();
 }
 
@@ -725,12 +742,14 @@ class BuildWorkerInfoSection extends StatelessWidget {
   final bool isFavorites;
   final void Function() onWorkerInfoPressed;
   final BuildContext context;
+  final bool isDark;
   const BuildWorkerInfoSection({
     super.key,
     required this.data,
     required this.isFavorites,
     required this.onWorkerInfoPressed,
-    required this.context
+    required this.context,
+    required this.isDark,
   });
 
   @override
@@ -752,15 +771,18 @@ class BuildWorkerInfoSection extends StatelessWidget {
               Text(
                 data.name!,
                 maxLines: 1,
-                style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w800),
+                style:  TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  color: isDark ? Colors.grey.shade300 :Colors.black,
+                ),
               ),
               if(isFavorites)
                 Text(
                   data.category!.translate(context),
                   style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.accentColor
+                      color:isDark ? AppColors.darkAccentColor:AppColors.accentColor
                   ),
                 ),
               Text(
@@ -782,7 +804,8 @@ class BuildWorkerInfoSection extends StatelessWidget {
                   style: TextStyle(
                       fontSize: isFavorites ? 12 : 14,
                       height: 1.3,
-                      color: Colors.grey[500]),
+                      color: isDark ?Colors.grey[600]: Colors.grey[500],
+                  ),
                 ),
               const Spacer(),
               Padding(
@@ -805,6 +828,7 @@ class WorkerCard extends StatelessWidget {
   final bool favIconCondition;
   final bool isFavorites;
   final BuildContext context;
+  final bool isDark;
 
   const WorkerCard({
     super.key,
@@ -813,7 +837,8 @@ class WorkerCard extends StatelessWidget {
     required this.favIconCondition,
     required this.isFavorites,
     required this.onPressed,
-    required this.context
+    required this.context,
+    required this.isDark
   });
 
   @override
@@ -825,11 +850,11 @@ class WorkerCard extends StatelessWidget {
            horizontal: 8
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color:isDark ?AppColors.darkMainColor : Colors.white,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.shade300,
+              color:isDark ? Colors.grey.shade800 : Colors.grey.shade300,
               offset: const Offset(1, 5),
               blurRadius: 5,
               spreadRadius: 2,
@@ -847,6 +872,7 @@ class WorkerCard extends StatelessWidget {
               ),
             ),
             BuildWorkerInfoSection(
+              isDark :isDark,
               context: context,
               data: data, isFavorites: isFavorites,
               onWorkerInfoPressed: onPressed,
@@ -872,8 +898,10 @@ class WorkerCard extends StatelessWidget {
 
 class BuildUserReviewCard extends StatelessWidget {
   final Reviews reviews;
+  final bool isDark;
 
-  const BuildUserReviewCard({super.key, required this.reviews});
+  const BuildUserReviewCard(
+      {super.key, required this.reviews, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -886,11 +914,11 @@ class BuildUserReviewCard extends StatelessWidget {
             top: 5
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? AppColors.darkMainColor : Colors.white,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.shade300,
+              color: isDark ? Colors.grey.shade700 : Colors.grey.shade400,
               offset: const Offset(1, 5),
               blurRadius: 5,
               spreadRadius: 1,
@@ -924,11 +952,17 @@ class BuildUserReviewCard extends StatelessWidget {
                             reviews.user!.name!,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: isDark ? Colors.grey.shade300 : Colors
+                                  .black,
+                            ),
                           ),
                           Text(
-                            timeAgo(date: DateTime.parse(reviews.date!),lang: lang),
+                            timeAgo(date: DateTime.parse(reviews.date!),
+                                lang: lang),
                             style:
-                            TextStyle(color: Colors.grey[400], fontSize: 10),
+                            TextStyle(color: isDark ? Colors.grey[400] : Colors
+                                .grey[500], fontSize: 10),
                           ),
                         ],
                       ),
@@ -936,10 +970,10 @@ class BuildUserReviewCard extends StatelessWidget {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: MyRatingBarIndicator(
-                    rating: double.parse(reviews.rate.toString()),
-                  )
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: MyRatingBarIndicator(
+                      rating: double.parse(reviews.rate.toString()),
+                    )
                 ),
               ],
             ),
@@ -947,8 +981,12 @@ class BuildUserReviewCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 5.0),
               child: Align(
-                alignment:lang =="en" ? Alignment.centerLeft :Alignment.centerRight,
-                  child: ExpandableTextWidget(text: reviews.comment!)),
+                  alignment: lang == "en" ? Alignment.centerLeft : Alignment.centerRight,
+                  child: ExpandableTextWidget(
+                      text: reviews.comment!,
+                    color: isDark ? Colors.grey[200] :Colors.black,
+                  )
+              ),
             )
           ],
         ),

@@ -16,13 +16,40 @@ class AppThemes {
           backgroundColor: Colors.grey[100],
           elevation: 2,
           titleTextStyle: TextStyle(
-              color: AppColors.mainColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+            color: AppColors.mainColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
           actionsIconTheme: IconThemeData(
             color: AppColors.mainColor,
           )
       )
   );
+  static ThemeData darkTheme = ThemeData(
+      primaryColor: AppColors.mainColor,
+      // Use the mainColor for dark theme
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: AppColors.darkMainColor, // Use the mainColor for dark theme
+      ),
+      scaffoldBackgroundColor: AppColors.darkBackgroundColor,
+      // Use the backgroundColor for dark theme
+      appBarTheme: AppBarTheme(
+          iconTheme: IconThemeData(
+            color: Colors.grey[500], // Use the darkMainColor for dark theme
+          ),
+          backgroundColor: AppColors.darkMainColor,
+          // Use the darkMainColor for dark theme
+          elevation: 2,
+          titleTextStyle: TextStyle(
+            color: AppColors.darkAccentColor,
+            // Use the accentColor for dark theme
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+          actionsIconTheme: IconThemeData(
+            color: AppColors.darkAccentColor, // Use the darkAccentColor for dark theme
+          )
+      )
+  );
+
 }
