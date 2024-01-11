@@ -16,7 +16,7 @@ class LayoutScreen extends StatelessWidget {
   const LayoutScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContextcontext) {
+  Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AppLayoutCubit(),
       child: BlocConsumer<AppLayoutCubit, AppLayoutStates>(
@@ -31,7 +31,9 @@ class LayoutScreen extends StatelessWidget {
           var cubit = AppLayoutCubit.get(context);
           return BlocBuilder<AppThemeCubit, AppThemeStates>(
               builder: (context, state) {
-                bool isDark = AppThemeCubit.get(context).isDark!;
+                bool isDark = AppThemeCubit
+                    .get(context)
+                    .isDark!;
                 return Scaffold(
                     appBar: AppBar(
                       automaticallyImplyLeading: false,
@@ -61,27 +63,51 @@ class LayoutScreen extends StatelessWidget {
                       actions: [
                         IconButton(
                           onPressed: () {
-                            navigateTo(context, const SearchScreen());
+                            navigateTo(
+                                context, const SearchScreen()
+                            );
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.search,
-                            color: AppColors.mainColor,
                           ),
                         ),
                       ],
                     ),
                     bottomNavigationBar: CurvedNavigationBar(
-                      backgroundColor:isDark ? AppColors.darkBackgroundColor: Colors.white,
+                      backgroundColor: isDark
+                          ? AppColors.darkBackGroundColor
+                          : AppColors.lightBackGroundColor,
                       height: 50,
                       index: cubit.bottomNavBarCurrentIndex,
-                      color:isDark ?AppColors.darkMainColor : AppColors.mainColor,
+                      color: isDark ? AppColors.darkSecondGrayColor : AppColors.lightMainGreenColor,
                       onTap: (index) => cubit.changeBottomNavBar(index),
-                      items:  [
-                        Icon(Icons.home, color:isDark ? AppColors.darkAccentColor:Colors.white),
-                        Icon(Icons.favorite_border, color: isDark ? AppColors.darkAccentColor:Colors.white),
-                        Icon(Icons.apps, color: isDark ? AppColors.darkAccentColor:Colors.white),
-                        Icon(Icons.reorder_rounded, color: isDark ? AppColors.darkAccentColor:Colors.white),
-                        Icon(Icons.settings, color: isDark ? AppColors.darkAccentColor:Colors.white),
+                      items: [
+                        Icon(
+                          Icons.home,
+                          color: isDark ? AppColors.darkMainGreenColor : Colors
+                              .white,
+                        ),
+                        Icon(
+                          cubit.bottomNavBarCurrentIndex != 1 ? Icons
+                              .favorite_border : Icons.favorite,
+                          color: isDark ? AppColors.darkMainGreenColor : Colors
+                              .white,
+                        ),
+                        Icon(
+                          Icons.apps,
+                          color: isDark ? AppColors.darkMainGreenColor : Colors
+                              .white,
+                        ),
+                        Icon(
+                          Icons.reorder_rounded,
+                          color: isDark ? AppColors.darkMainGreenColor : Colors
+                              .white,
+                        ),
+                        Icon(
+                          Icons.settings,
+                          color: isDark ? AppColors.darkMainGreenColor : Colors
+                              .white,
+                        ),
                       ],
                     ),
                     body: cubit.screens[cubit.bottomNavBarCurrentIndex]

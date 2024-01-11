@@ -45,19 +45,17 @@ class ProfileInfoDataSection extends StatelessWidget {
                             workerModel.name!,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
-                            style: TextStyle(
-                                fontSize: workerModel.profileImage !=
-                                    "images/default_user_image.jpg" ? 14 : 17,
-                                fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.grey.shade300 : Colors.black
+                            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                fontSize: workerModel.profileImage != "images/default_user_image.jpg" ? 14 : 17,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         const SizedBox(width: 4,),
                         MyButton(
                           background: workerModel.availability == "available"
-                              ? AppColors.mainColor
-                              : AppColors.iconColor,
+                              ?isDark?AppColors.darkMainGreenColor: AppColors.lightMainGreenColor
+                              :isDark?AppColors.darkSecondaryTextColor:AppColors.lightSecondaryTextColor,
                           onPressed: () {
                             workerModel.availability == "available"
                                 ? navigateTo(
@@ -70,18 +68,15 @@ class ProfileInfoDataSection extends StatelessWidget {
                           radius: 50,
                           isUpperCase: false,
                           fontSize: 10,
-                          textColor: workerModel.availability == "available"
-                              ? Colors.white
-                              : Colors.black,
                         )
                       ],
                     ),
                     //category
                     Text(
                       workerModel.category!.translate(context),
-                      style: TextStyle(
-                          color: isDark ? Colors.grey.shade600 : Colors.grey[500],
-                          fontSize: 13,
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        fontSize: 13,
+                        color: isDark ?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor
                       ),
                     ),
                     const SizedBox(
@@ -148,7 +143,7 @@ class ProfileInfoDataSection extends StatelessWidget {
           child: Container(
             height: 68,
             decoration: BoxDecoration(
-              color:isDark ? AppColors.darkMainColor:Colors.grey[100],
+              color:isDark ? AppColors.darkSecondGrayColor:AppColors.darkMainTextColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
@@ -159,23 +154,26 @@ class ProfileInfoDataSection extends StatelessWidget {
                   FittedBox(
                     child: Text(
                       'RATING'.translate(context),
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
                         fontSize: workerModel.profileImage != "images/default_user_image.jpg" ? 10 : 12,
                         fontWeight: FontWeight.w500,
-                        color: isDark ? Colors.grey.shade300 :Colors.black,
+                        color: isDark ?AppColors.darkMainTextColor: AppColors.lightMainTextColor
                       ),
                     ),
                   ),
                   Text(
                     //3.50 = 3.5
                     num.parse(workerModel.ratingAverage!).toStringAsFixed(1),
-                    style:  TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                      color:isDark ? Colors.grey.shade300 :Colors.black,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ?AppColors.darkMainTextColor :AppColors.lightMainTextColor
+                    )
                   ),
-                  MyRatingBarIndicator(rating:  double.parse(workerModel.ratingAverage!),
+                  MyRatingBarIndicator(
+                    isDark: isDark,
+                    rating:  double.parse(workerModel.ratingAverage!
+                    ),
                   ),
                 ],
               ),
@@ -191,20 +189,21 @@ class ProfileInfoDataSection extends StatelessWidget {
             height: 68,
             decoration: BoxDecoration(
               color: workerModel.availability! == 'available'
-                  ? AppColors.mainColor
-                  : isDark ?AppColors.errorColor :AppColors.accentColor,
+                  ?isDark?AppColors.darkMainGreenColor: AppColors.lightMainGreenColor
+                  : isDark ?AppColors.darkRedColor :AppColors.lightRedColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
               child: Text(
                 workerModel.availability!.translate(context).toUpperCase(),
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: workerModel.profileImage !=
-                        "images/default_user_image.jpg"
-                        ? lang=="ar" ? 20 :12
-                        : lang=="ar" ? 20 : 14,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  fontSize: workerModel.profileImage !=
+                          "images/default_user_image.jpg"
+                          ? lang=="ar" ? 20 :12
+                          : lang=="ar" ? 20 : 14,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.darkMainTextColor
+                ),
               ),
             ),
           ),
@@ -216,7 +215,8 @@ class ProfileInfoDataSection extends StatelessWidget {
 class BioSection extends StatelessWidget {
   final String bio;
   final bool isDark;
-  const BioSection({super.key, required this.bio,required this.isDark});
+
+  const BioSection({super.key, required this.bio, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -224,19 +224,24 @@ class BioSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-         Text(
+        Text(
           'About'.translate(context),
-          style:  TextStyle(
-              fontSize: 17, fontWeight: FontWeight.w800,
-            color: isDark ? Colors.grey.shade300 :Colors.black,
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(
+              fontSize: 17,
+              fontWeight: FontWeight.w800
           ),
         ),
         const SizedBox(
           height: 10,
         ),
         ExpandableTextWidget(
-            text: bio,
-          color: isDark ? Colors.grey.shade300 :Colors.black,
+          text: bio,
+          color: isDark ? AppColors.darkSecondaryTextColor : AppColors
+              .lightSecondaryTextColor,
         )
       ],
     );
@@ -257,10 +262,15 @@ class ReviewHeaderSection extends StatelessWidget {
       children: [
         Text(
           'Reviews'.translate(context),
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w800,
-            color: isDark ? Colors.grey.shade300 : Colors.black,
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.darkMainTextColor : AppColors
+                  .lightMainTextColor
           ),
         ),
         TextButton(
@@ -279,8 +289,11 @@ class ReviewHeaderSection extends StatelessWidget {
                   'See all'.translate(context),
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: reviewsModel.data!.isEmpty ? isDark ? Colors
-                          .grey[500] : Colors.grey[400] : AppColors.mainColor
+                      color: reviewsModel.data!.isEmpty ?
+                      isDark ? AppColors.darkSecondaryTextColor : AppColors
+                          .lightSecondaryTextColor
+                          : isDark ? AppColors.darkMainGreenColor : AppColors
+                          .lightMainGreenColor
                   ),
                 ),
                 const SizedBox(
@@ -289,8 +302,11 @@ class ReviewHeaderSection extends StatelessWidget {
                 Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 12,
-                    color: reviewsModel.data!.isEmpty ? isDark ? Colors
-                        .grey[500] : Colors.grey[400] : AppColors.mainColor
+                    color: reviewsModel.data!.isEmpty ?
+                    isDark ? AppColors.darkSecondaryTextColor : AppColors
+                        .lightSecondaryTextColor
+                        : isDark ? AppColors.darkMainGreenColor : AppColors
+                        .lightMainGreenColor
                 )
               ],
             ))
@@ -319,7 +335,8 @@ class ReviewsSection extends StatelessWidget {
         addAutomaticKeepAlives: false,
         addRepaintBoundaries: false,
         itemBuilder: (context, index) {
-          return BuildUserReviewCard(reviews: reviewsModel[index].reviews!,isDark: isDark,);
+          return BuildUserReviewCard(
+            reviews: reviewsModel[index].reviews!, isDark: isDark,);
         },
         separatorBuilder: (context, index) {
           return const SizedBox(height: 10);
@@ -359,22 +376,24 @@ class WorkerInfo extends StatelessWidget {
         launchUrl(Uri.parse(url));
       },
       child: Container(
+        height: 65,
         margin: const EdgeInsets.only(bottom: 5),
-        padding: const EdgeInsets.all(5),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: isDark ? Colors.grey[700] : Colors.grey.withOpacity(0.1)
+            color: isDark? AppColors.darkSecondGrayColor: Colors.grey[300]!.withOpacity(0.5),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundColor: isDark ? Colors.grey[400] : Colors.grey[300]!
-                  .withOpacity(0.7),
+              backgroundColor: isDark?
+              AppColors.darkSecondaryTextColor.withOpacity(0.2)
+                  : AppColors.darkSecondaryTextColor.withOpacity(0.1),
               child: Icon(
                 icon,
-                color: AppColors.mainColor,
+                color:isDark?AppColors.darkMainGreenColor: AppColors.lightMainGreenColor,
                 size: 20,
               ),
             ),
@@ -385,10 +404,10 @@ class WorkerInfo extends StatelessWidget {
                 title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.grey[200] : Colors.black
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isDark?AppColors.darkMainTextColor: AppColors.lightMainTextColor
                 ),
               ),
             ),
@@ -403,7 +422,7 @@ class WorkerInfo extends StatelessWidget {
                   },
                   child: Icon(
                     Icons.arrow_forward,
-                    color: AppColors.mainColor,
+                    color:isDark?AppColors.darkAccentColor: AppColors.lightAccentColor,
                     size: 20,
                   ),
                 ),

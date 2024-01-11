@@ -27,11 +27,7 @@ class CategoryScreen extends StatelessWidget {
               return SafeArea(
                 child: MainBackGroundImage(
                     child: state is AppLayoutGetCategoryLoadingState
-                        ? Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.mainColor,
-                      ),
-                    )
+                        ? const Center(child: CircularProgressIndicator())
                         : cubit.categoryModel != null
                         ? Padding(
                       padding: const EdgeInsets.only(left: 4.0, right: 4),
@@ -43,7 +39,7 @@ class CategoryScreen extends StatelessWidget {
                         crossAxisCount: 2,
                         mainAxisSpacing: 13,
                         crossAxisSpacing: 10,
-                        childAspectRatio: 1 / 1.235,
+                        childAspectRatio: 1 / 1.260,
                         children: List.generate(
                           cubit.categoryModel!.data!.length,
                               (index) =>
@@ -70,7 +66,8 @@ class BuildGridProduct extends StatelessWidget {
   final CategoryDataModel model;
   final bool isDark;
 
-  const BuildGridProduct({super.key, required this.model,required this.isDark});
+  const BuildGridProduct(
+      {super.key, required this.model, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +83,10 @@ class BuildGridProduct extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color:isDark ?Colors.grey[800]: Colors.white,
+            color: isDark ? AppColors.darkSecondGrayColor : AppColors.lightBackGroundColor,
             boxShadow: [
               BoxShadow(
-                  color:isDark ?  Colors.grey.shade700 :Colors.grey.shade400,
+                  color: isDark ? AppColors.darkShadowColor : AppColors.lightShadowColor,
                   offset: const Offset(0, 3),
                   blurRadius: 2,
                   spreadRadius: 2)
@@ -112,11 +109,9 @@ class BuildGridProduct extends StatelessWidget {
                       ),
                     ),
                 placeholder: (context, url) =>
-                    Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.mainColor,
-                      ),
-                    ),
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
               const SizedBox(
@@ -129,12 +124,7 @@ class BuildGridProduct extends StatelessWidget {
                     model.category!.name!.translate(context),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style:  TextStyle(
-                      fontSize: 16.0,
-                      height: 1.3,
-                      fontWeight: FontWeight.w800,
-                      color: isDark ?Colors.grey[300]:Colors.black
-                    ),
+                    style: Theme.of(context).textTheme.bodyLarge!
                   ),
                 ),
               ),
@@ -143,34 +133,26 @@ class BuildGridProduct extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: FittedBox(
                     child: lang == "en" ? Text(
-                      "${model.category!.workerCount.toString()} Worker available",
+                      "${model.category!.workerCount
+                          .toString()} Worker available",
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: isDark ?Colors.grey[500]:Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color:isDark ? AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor,
+                      )
                     ) : Row(
                       children: [
                         Text(
                           "${model.category!.workerCount}",
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w500,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color:isDark ? AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor
+                          )
                         ),
                         const SizedBox(width: 2,),
                         Text("Worker available".translate(context),
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w500,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color:isDark ? AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor
+                          )
                         ),
                       ],
                     )

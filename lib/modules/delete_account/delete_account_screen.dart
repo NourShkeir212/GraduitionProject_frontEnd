@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -29,7 +30,7 @@ class DeleteAccountScreen extends StatelessWidget {
                 navigateAndFinish(context, const AuthScreen());
               }
               if (state is AppDeleteAccountErrorState) {
-                errorSnackBar(context: context, message: state.error);
+                errorSnackBar(context: context, message: state.error,isDark: isDark);
               }
             },
             builder: (context, state) {
@@ -39,15 +40,14 @@ class DeleteAccountScreen extends StatelessWidget {
                 appBar: myAppBar(
                     title: 'Delete Account'.translate(context),
                     actions: [
-                       MyAppBarLogo(),
+                       const MyAppBarLogo(),
                     ]
                 ),
                 body: SafeArea(
                   child: MainBackGroundImage(
                     centerDesign: false,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 18.0, vertical: 25),
+                      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 25),
                       child: Form(
                         key: formKey,
                         child: SingleChildScrollView(
@@ -55,9 +55,7 @@ class DeleteAccountScreen extends StatelessWidget {
                           child: Column(
                             children: [
                               if(state is AppDeleteAccountLoadingState)
-                                LinearProgressIndicator(
-                                  color: AppColors.mainColor,
-                                ),
+                                const LinearProgressIndicator(),
                               TextsSection(isDark:isDark),
                               MyTextField(
                                 isDark: isDark,
@@ -87,10 +85,19 @@ class DeleteAccountScreen extends StatelessWidget {
                 bottomNavigationBar: Padding(
                   padding: const EdgeInsets.only(bottom: 20.0, left: 16.0, right: 16.0),
                   child: MyButton(
-                    background: AppColors.errorColor,
+                    background:isDark ?AppColors.darkRedColor: AppColors.lightRedColor,
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
-                        cubit.deleteAccount(password: passwordController.text);
+                       myCustomDialog(
+                           context: context,
+                           title: "Delete account".translate(context),
+                           desc: "Are your sure you want to delete your account ?".translate(context),
+                           dialogType: DialogType.question,
+                           isDark: isDark,
+                         btnOkOnPress: (){
+                             cubit.deleteAccount(password: passwordController.text);
+                         }
+                       );
                       }
                     },
                     radius: 50,
@@ -109,6 +116,7 @@ class DeleteAccountScreen extends StatelessWidget {
 
 class TextsSection extends StatelessWidget {
   final bool isDark;
+
   const TextsSection({super.key, required this.isDark});
 
   @override
@@ -116,34 +124,53 @@ class TextsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-         Padding(
+        Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: Text(
             "Are you sure you want to delete your account?".translate(context),
-            style:  TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1,
-              color: isDark ? Colors.grey.shade100 :Colors.black,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: Theme
+                .of(context)
+                .textTheme
+                .headlineLarge!
+                .copyWith(
+              fontSize: 25,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1,
+              color: isDark ? AppColors.darkMainTextColor : AppColors
+                  .lightMainTextColor,
             ),
           ),
         ),
         const SizedBox(height: 20,),
         Text(
-          "Once you delete your account, it cannot be undone. All your data will be permanently erased from this app includes your profile information, preferences, saved content, and any activity history.".translate(context),
-          style: TextStyle(
-              color:isDark ?Colors.grey[500]: Colors.grey.shade600,
-              fontSize: 15
+          "Once you delete your account, it cannot be undone. All your data will be permanently erased from this app includes your profile information, preferences, saved content, and any activity history."
+              .translate(context),
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleSmall!
+              .copyWith(
+              fontSize: 15,
+              color: isDark ? AppColors.darkSecondaryTextColor : AppColors
+                  .lightSecondaryTextColor
           ),
         ),
         const SizedBox(height: 20,),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: Text(
-            "We're sad to see you go, but we understand that sometimes it's necessary. Please take a moment to consider the consequences before proceeding.".translate(context),
-            style: TextStyle(
-                color:isDark ?Colors.grey[500]: Colors.grey.shade600,
+            "We're sad to see you go, but we understand that sometimes it's necessary. Please take a moment to consider the consequences before proceeding."
+                .translate(context),
+            style: Theme
+                .of(context)
+                .textTheme
+                .titleSmall!
+                .copyWith(
                 fontSize: 15,
+                color: isDark ? AppColors.darkSecondaryTextColor : AppColors
+                    .lightSecondaryTextColor
             ),
           ),
         ),

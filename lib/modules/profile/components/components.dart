@@ -33,36 +33,41 @@ class ProfileDataSection extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 5),
         width: double.infinity,
         decoration: BoxDecoration(
-            color: isDark ? Colors.blue.shade300.withOpacity(0.2) : Colors.blue
-                .shade100.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20)
+            color: isDark ?AppColors.darkSecondGrayColor : AppColors.lightGrayBackGroundColor,
+            borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+               offset: const Offset(1,1),
+              color: isDark ?AppColors.darkShadowColor :AppColors.lightShadowColor,
+              blurRadius: 1,
+              spreadRadius: 1
+            )
+          ]
         ),
         child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(25.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  backgroundColor: isDark ? Colors.blue.shade300.withOpacity(
-                      0.5) : Colors.blue.shade100.withOpacity(0.5),
-                  child: Icon(
-                    icon,
-                    color: isDark ? Colors.white : AppColors.mainColor,
-                  ),
+                Icon(
+                  icon,
+                  color: isDark ? AppColors.darkMainGreenColor :AppColors.lightMainGreenColor,
                 ),
                 const SizedBox(width: 15,),
                 Flexible(
                   child: Text(
-                    title == ""
-                        ? 'Add your address now'.translate(context)
+                    title == "" ? 'Add your address now'.translate(context)
                         : title,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 3,
-                    style: TextStyle(
-                      fontSize: 16,
+                    // style: TextStyle(
+                    //   fontSize: 16,
+                    //   fontWeight: FontWeight.w600,
+                    //   overflow: TextOverflow.ellipsis,
+                    //   color: isDark ? Colors.grey.shade300 : Colors.black,
+                    // ),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       fontWeight: FontWeight.w600,
-                      overflow: TextOverflow.ellipsis,
-                      color: isDark ? Colors.grey.shade300 : Colors.black,
                     ),
                   ),
                 ),
@@ -208,17 +213,14 @@ class NameAndEditProfileSection extends StatelessWidget {
           child: Text(
             name,
             overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            style:  TextStyle(
-                overflow: TextOverflow.ellipsis,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              color: isDark ? Colors.grey.shade300 :Colors.black,
+            maxLines: 3,
+            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+              fontSize: 22
             ),
           ),
         ),
         MyOutLinedButton(
-          textColor: isDark ? Colors.white:Colors.black,
+          textColor: isDark ?AppColors.darkMainTextColor :AppColors.lightMainTextColor,
           text: 'Edit profile'.translate(context),
           onPressed: onPressed,
           radius: 8,

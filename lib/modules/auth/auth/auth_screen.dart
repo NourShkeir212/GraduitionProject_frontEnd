@@ -44,6 +44,7 @@ class AuthScreen extends StatelessWidget {
                   errorSnackBar(
                     context: context,
                     message: state.error,
+                    isDark: isDark,
                   );
                 }
                 if (state is AppAuthLoginSuccessState) {
@@ -55,8 +56,9 @@ class AuthScreen extends StatelessWidget {
                         value: state.loginModel.data!.token
                     ).then((value) {
                       successSnackBar(
-                          context: context,
-                          message: "Welcome".translate(context)
+                        context: context,
+                        message: "Welcome".translate(context),
+                        isDark: isDark,
                       );
                       token = state.loginModel.data!.token!;
                       navigateAndFinish(context, const LayoutScreen());
@@ -66,20 +68,23 @@ class AuthScreen extends StatelessWidget {
                     successSnackBar(
                       message: "Welcome".translate(context),
                       context: context,
+                      isDark: isDark,
                     );
                     navigateAndFinish(context, const LayoutScreen());
                   }
                 }
                 if (state is AppAuthRegisterErrorState) {
                   errorSnackBar(
-                      context: context,
-                      message: state.error
+                    context: context,
+                    message: state.error,
+                    isDark: isDark,
                   );
                 }
                 if (state is AppAuthRegisterSuccessState) {
                   successSnackBar(
                     context: context,
                     message: "Account Successfully Created".translate(context),
+                    isDark: isDark,
                   );
                   AppAuthCubit
                       .get(context)
@@ -120,7 +125,9 @@ class AuthScreen extends StatelessWidget {
                             margin: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 5),
                             decoration: BoxDecoration(
-                              color: isDark ? Colors.grey[800] : Colors.white,
+                              color: isDark
+                                  ? AppColors.darkSecondGrayColor
+                                  : AppColors.lightGrayBackGroundColor,
                               borderRadius: BorderRadius.circular(15),
                               boxShadow: [
                                 BoxShadow(
@@ -151,14 +158,26 @@ class AuthScreen extends StatelessWidget {
                                       child: Column(
                                         children: [
                                           Text(
-                                              "LOGIN".translate(context),
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: cubit.isSignUpScreen
-                                                      ? isDark ?Colors.grey[600] :AppColors.textGray1Color
-                                                      : AppColors.mainColor
-                                              )
+                                            "LOGIN".translate(context),
+                                            style: Theme
+                                                .of(context)
+                                                .textTheme
+                                                .titleMedium!
+                                                .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: cubit.isSignUpScreen ?
+                                                isDark
+                                                    ? AppColors
+                                                    .darkSecondaryTextColor
+                                                    : AppColors
+                                                    .lightSecondaryTextColor
+                                                    :
+                                                isDark
+                                                    ? AppColors
+                                                    .darkMainGreenColor
+                                                    : AppColors
+                                                    .lightMainGreenColor
+                                            ),
                                           ),
                                           if(!cubit.isSignUpScreen)
                                             Container(
@@ -166,7 +185,9 @@ class AuthScreen extends StatelessWidget {
                                                   top: 3),
                                               height: 2,
                                               width: 55,
-                                              color: AppColors.accentColor,
+                                              color: isDark ? AppColors
+                                                  .darkAccentColor : AppColors
+                                                  .lightAccentColor,
                                             ),
                                         ],
                                       ),
@@ -187,13 +208,24 @@ class AuthScreen extends StatelessWidget {
                                         children: [
                                           Text(
                                               "SIGNUP".translate(context),
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                color: cubit.isSignUpScreen
-                                                    ? AppColors.mainColor
-                                                    : isDark ?Colors.grey[600] :AppColors.textGray1Color,
-                                              )
+                                              style: Theme
+                                                  .of(context)
+                                                  .textTheme
+                                                  .titleMedium!
+                                                  .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: cubit.isSignUpScreen ?
+                                                  isDark
+                                                      ? AppColors
+                                                      .darkMainGreenColor
+                                                      : AppColors
+                                                      .lightMainGreenColor
+                                                      :
+                                                  isDark
+                                                      ? AppColors
+                                                      .darkSecondaryTextColor
+                                                      : AppColors
+                                                      .lightSecondaryTextColor)
                                           ),
                                           if(cubit.isSignUpScreen)
                                             Container(
@@ -201,7 +233,9 @@ class AuthScreen extends StatelessWidget {
                                                   top: 3),
                                               height: 2,
                                               width: 55,
-                                              color: AppColors.accentColor,
+                                              color: isDark ? AppColors
+                                                  .darkAccentColor : AppColors
+                                                  .lightAccentColor,
                                             ),
                                         ],
                                       ),

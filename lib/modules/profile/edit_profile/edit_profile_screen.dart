@@ -38,37 +38,37 @@ class EditProfileScreen extends StatelessWidget {
           child: BlocConsumer<AppProfileCubit, AppProfileStates>(
             listener: (context, state) {
               if (state is AppUpdateProfileErrorState) {
-                errorSnackBar(context: context, message: state.error);
+                errorSnackBar(isDark: isDark,context: context, message: state.error);
               }
               if (state is AppProfileDeleteProfileImageErrorState) {
-                errorSnackBar(context: context, message: state.error);
+                errorSnackBar(isDark: isDark,context: context, message: state.error);
               }
               if (state is AppProfileUpdateProfileImageErrorState) {
-                errorSnackBar(context: context, message: state.error);
+                errorSnackBar(isDark: isDark,context: context, message: state.error);
               }
               if (state is AppUpdateProfileSuccessState) {
                 // Get.back(result: 'updated');
                 Navigator.pop(context, 'updated');
-                successSnackBar(context: context,
+                successSnackBar(isDark: isDark,context: context,
                     message: 'Profile has been updated'.translate(context));
               }
               if (state is AppProfileDeleteProfileImageSuccessState) {
                 profile.profileImage = "images/default_user_image.jpg";
                 profileImageUrl = "images/default_user_image.jpg";
                 profileImageDeleted = state.deleteProfileImage;
-                successSnackBar(context: context,
+                successSnackBar(isDark: isDark,context: context,
                     message: 'Profile image has been deleted'.translate(context));
               }
               if (state is AppProfileUpdateProfileImageSuccessState) {
                 profile.profileImage = state.imageUrl;
                 profileImageUrl = state.imageUrl;
-                successSnackBar(context: context,
+                successSnackBar(isDark: isDark,context: context,
                     message: 'Profile image has been updated'.translate(context));
               }
               if (state is AppProfileUploadProfileImageSuccessState) {
                 profile.profileImage = state.imageUrl;
                 profileImageUrl = state.imageUrl;
-                successSnackBar(context: context,
+                successSnackBar(isDark: isDark,context: context,
                     message: 'Profile image has been uploaded'.translate(context));
               }
             },
@@ -78,7 +78,7 @@ class EditProfileScreen extends StatelessWidget {
                 appBar: myAppBar(
                     title: 'Edit profile'.translate(context),
                     actions: [
-                       MyAppBarLogo(),
+                       const MyAppBarLogo(),
                     ],
                     leading: IconButton(
                       onPressed: () {
@@ -119,7 +119,7 @@ class EditProfileScreen extends StatelessWidget {
                                   const SizedBox(height: 30),
                                   //Profile Image Buttons
                                   ProfileImageButtons(
-
+                                    isDark :isDark,
                                     context: context,
                                     profileImageUrl: profileImageUrl,
                                     profileImageDeleted: profileImageDeleted,
@@ -205,7 +205,7 @@ class EditProfileScreen extends StatelessWidget {
                 bottomNavigationBar: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: MyButton(
-                      background: AppColors.mainColor,
+                      background:isDark ?AppColors.darkMainGreenColor: AppColors.lightMainGreenColor,
                       radius: 50,
                       height: 50,
                       onPressed: () {
@@ -243,24 +243,16 @@ class LinerProgressConditions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (state is AppUpdateProfileLoadingState) {
-      return LinearProgressIndicator(
-        color: AppColors.mainColor,
-      );
+      return const LinearProgressIndicator();
     }
     if (state is AppProfileDeleteProfileImageLoadingState) {
-      return LinearProgressIndicator(
-        color: AppColors.mainColor,
-      );
+      return const LinearProgressIndicator();
     }
     if (state is AppProfileUpdateProfileImageLoadingState) {
-      return LinearProgressIndicator(
-        color: AppColors.mainColor,
-      );
+      return const LinearProgressIndicator();
     }
     if (state is AppProfileUploadProfileImageLoadingState) {
-      return LinearProgressIndicator(
-        color: AppColors.mainColor,
-      );
+      return const LinearProgressIndicator();
     }
     return const SizedBox.shrink();
   }
@@ -269,11 +261,12 @@ class LinerProgressConditions extends StatelessWidget {
 class ProfileImageUpdateAndDeleteButtons extends StatelessWidget {
   final void Function() onDeletePressed;
   final void Function() onUpdatePressed;
-
+  final bool isDark;
   const ProfileImageUpdateAndDeleteButtons({
     super.key,
     required this.onDeletePressed,
     required this.onUpdatePressed,
+    required this.isDark,
 
   });
 
@@ -287,7 +280,7 @@ class ProfileImageUpdateAndDeleteButtons extends StatelessWidget {
         Expanded(
           child: MyButton(
             radius: 50,
-            background: AppColors.errorColor,
+            background: isDark?AppColors.darkRedColor : AppColors.lightRedColor,
             onPressed: onDeletePressed,
             text: 'Delete profile image'.translate(context),
             isUpperCase: false,
@@ -300,7 +293,7 @@ class ProfileImageUpdateAndDeleteButtons extends StatelessWidget {
         Expanded(
           child: MyButton(
             radius: 50,
-            background: AppColors.mainColor,
+            background: isDark?AppColors.darkMainGreenColor : AppColors.lightMainGreenColor,
             onPressed: onUpdatePressed,
             text: 'Update profile image'.translate(context),
             isUpperCase: false,
@@ -319,6 +312,7 @@ class ProfileImageButtons extends StatelessWidget {
    final void Function() onUpdatePressed;
    final void Function() onDeletePressed;
    final BuildContext context;
+   final bool isDark;
    const ProfileImageButtons({
      super.key,
      required this.profileImageUrl,
@@ -327,6 +321,7 @@ class ProfileImageButtons extends StatelessWidget {
      required this.onUpdatePressed,
      required this.onDeletePressed,
      required this.context,
+     required this.isDark
    });
 
    @override
@@ -338,7 +333,7 @@ class ProfileImageButtons extends StatelessWidget {
                profileImageDeleted,
            child: MyButton(
              radius: 50,
-             background: AppColors.mainColor,
+             background:isDark?AppColors.darkMainGreenColor : AppColors.lightMainGreenColor,
              onPressed: onUploadPressed,
              text: 'Upload profile image'.translate(context),
              isUpperCase: false,
@@ -355,6 +350,7 @@ class ProfileImageButtons extends StatelessWidget {
            visible: profileImageUrl != "images/default_user_image.jpg" &&
                !profileImageDeleted,
            child: ProfileImageUpdateAndDeleteButtons(
+             isDark: isDark,
                onDeletePressed: onDeletePressed,
                onUpdatePressed: onUpdatePressed
            ),

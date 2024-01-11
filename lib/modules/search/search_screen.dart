@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hire_me/models/search_model.dart';
-import 'package:hire_me/modules/worker/worker_screen.dart';
 import 'package:hire_me/shared/Localization/app_localizations.dart';
-import '../../models/category_details_model.dart';
+import '../../models/search_model.dart';
 import '../../shared/components/components.dart';
 import '../../shared/shared_cubit/theme_cubit/cubit.dart';
 import '../../shared/shared_cubit/theme_cubit/states.dart';
 import '../../shared/styles/colors.dart';
+import '../worker/worker_screen.dart';
 import 'cubit/search_lib.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -27,7 +26,7 @@ class SearchScreen extends StatelessWidget {
           child: BlocConsumer<AppSearchCubit, AppSearchStates>(
             listener: (context, state) {
               if (state is AppSearchErrorState) {
-                errorSnackBar(context: context, message: state.error);
+                errorSnackBar(isDark: isDark,context: context, message: state.error);
               }
             },
             builder: (context, state) {
@@ -96,6 +95,7 @@ class SearchScreen extends StatelessWidget {
                               physics: const BouncingScrollPhysics(),
                               itemBuilder: (context, index) {
                                 return WorkerSearchCard(
+                                  isDark: isDark,
                                   data: cubit.searchModel!.data![index].searchResult!,
                                   isFavorites: cubit.searchModel!.data![index].searchResult!.isFavorite!,
                                 );
@@ -122,11 +122,12 @@ class SearchScreen extends StatelessWidget {
 class WorkerSearchCard extends StatelessWidget {
   final SearchResult data;
   final bool isFavorites;
-
+  final bool isDark;
   const WorkerSearchCard({
     super.key,
     required this.data,
-    required this.isFavorites
+    required this.isFavorites,
+    required this.isDark
   });
 
   @override
@@ -139,14 +140,14 @@ class WorkerSearchCard extends StatelessWidget {
             right: 15
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color:isDark?AppColors.darkSecondGrayColor: AppColors.lightGrayBackGroundColor,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.shade300,
-              offset: const Offset(1, 5),
-              blurRadius: 5,
-              spreadRadius: 2,
+              color:isDark ?AppColors.darkShadowColor: AppColors.lightShadowColor,
+              offset: const Offset(1, 1),
+              blurRadius: 1,
+              spreadRadius: 1,
             ),
           ],
         ),
@@ -158,6 +159,7 @@ class WorkerSearchCard extends StatelessWidget {
               imageUrl: data.profileImage! == "" ? "" : data.profileImage!,
             ),
             BuildWorkerInfoSection(
+              isDark: isDark,
               data: data,
               isFavorites: isFavorites,
               onWorkerInfoPressed: (){
@@ -176,11 +178,13 @@ class BuildWorkerInfoSection extends StatelessWidget {
   final SearchResult data;
   final bool isFavorites;
   final void Function() onWorkerInfoPressed;
+  final bool isDark;
   const BuildWorkerInfoSection({
     super.key,
     required this.data,
     required this.isFavorites,
-    required this.onWorkerInfoPressed
+    required this.onWorkerInfoPressed,
+    required this.isDark
   });
 
   @override
@@ -201,23 +205,45 @@ class BuildWorkerInfoSection extends StatelessWidget {
               Text(
                 data.name!,
                 maxLines: 1,
-                style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w800),
-              ),
-                Text(
-                  data.category!.translate(context),
-                  style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.accentColor
-                  ),
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? AppColors.darkMainTextColor : AppColors
+                        .lightMainTextColor
                 ),
+              ),
+              Text(
+                data.category!.translate(context),
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleSmall!
+                    .copyWith(
+                    color: isDark ? AppColors.darkAccentColor : AppColors
+                        .lightAccentColor
+                ),
+              ),
               Text(
                 data.availability!.translate(context),
-                style: TextStyle(
+                // style: TextStyle(
+                //   fontSize: data.bio! != "" ? 12 : 14,
+                //   color: data.availability == "available"
+                //       ? AppColors.lightMainGreenColor
+                //       : AppColors.lightRedColor,
+                // ),
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleSmall!
+                    .copyWith(
                   fontSize: data.bio! != "" ? 12 : 14,
-                  color: data.availability == "available"
-                      ? AppColors.mainColor
-                      : AppColors.errorColor,
+                  color: data.availability == "available" ? isDark
+                      ? AppColors.darkMainGreenColor
+                      : AppColors.lightMainGreenColor : isDark ? AppColors
+                      .darkRedColor : AppColors.lightRedColor,
                 ),
               ),
               if (data.bio! != "")
@@ -227,15 +253,23 @@ class BuildWorkerInfoSection extends StatelessWidget {
                   data.bio!,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 3,
-                  style: TextStyle(
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .titleSmall!
+                      .copyWith(
                       fontSize: isFavorites ? 12 : 14,
                       height: 1.3,
-                      color: Colors.grey[500]),
+                      color: isDark
+                          ? AppColors.darkSecondaryTextColor
+                          : AppColors.lightSecondaryTextColor
+                  ),
                 ),
               const Spacer(),
               Padding(
                 padding: const EdgeInsets.only(bottom: 5.0),
                 child: MyRatingBarIndicator(
+                  isDark: isDark,
                   rating: double.parse(data.ratingAverage!), iconSize: 14,),
               )
             ],

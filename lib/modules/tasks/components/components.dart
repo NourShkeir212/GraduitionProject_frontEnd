@@ -27,89 +27,75 @@ class TabBarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color leftItemColor = index == 0 ? AppColors.mainColor :isDark ?Colors.grey.shade400: Colors.black;
-    Color rightItemColor = index == 1 ? AppColors.mainColor :isDark ?Colors.grey.shade400: Colors.black;
+    Color leftItemColor = index == 0
+        ? isDark
+        ? AppColors.darkMainGreenColor
+        : AppColors.lightMainGreenColor
+        : isDark
+        ? AppColors.darkSecondaryTextColor
+        : AppColors.lightSecondaryTextColor;
+    Color rightItemColor = index == 1
+        ? isDark
+        ? AppColors.darkMainGreenColor
+        : AppColors.lightMainGreenColor
+        : isDark
+        ? AppColors.darkSecondaryTextColor
+        : AppColors.lightSecondaryTextColor;
+
+    Widget buildItem(int index, bool isDark, VoidCallback onTap, String text) {
+      return Expanded(
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.only(top: 12),
+            height: 50,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                color: isDark ? AppColors.darkSecondGrayColor : AppColors.lightGrayBackGroundColor
+            ),
+            child: Column(
+              children: [
+                FittedBox(
+                  child: Text(
+                    text.translate(context),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: index ==0 ? leftItemColor : rightItemColor
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                if(index == 0)
+                  underLine(leftItemColor),
+                if(index == 1)
+                  underLine(rightItemColor),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Container(
-            child: Expanded(
-              child: InkWell(
-                highlightColor: Colors.red,
-                onTap: onScheduledTap,
-                child: Container(
-                  padding: const EdgeInsets.only(top: 12),
-                  height: 50,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      color: isDark ? Colors.grey.shade800 : Colors.grey.shade200
-                  ),
-                  child: Column(
-                    children: [
-                      FittedBox(
-                        child: Text(
-                            'Scheduled'.translate(context),
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: leftItemColor
-                            )
-                        ),
-                      ),
-                      const Spacer(),
-                      if(index==0)
-                        underLine()
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: InkWell(
-              onTap: onCompletedTap,
-              child: Container(
-                padding: const EdgeInsets.only(top: 12),
-                height: 50,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: isDark ? Colors.grey.shade800 : Colors.grey.shade200
-                ),
-                child: Column(
-                  children: [
-                    FittedBox(
-                      child: Text(
-                          'Completed'.translate(context),
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: rightItemColor
-                          )
-                      ),
-                    ),
-                    const Spacer(),
-                    if(index==1)
-                      underLine()
-                  ],
-                ),
-              ),
-            ),
-          ),
+          buildItem(0, isDark, onScheduledTap, 'Scheduled'),
+          buildItem(1, isDark, onCompletedTap, 'Completed'),
         ],
       ),
     );
+
   }
 
-  Widget underLine() {
+  Widget underLine(Color color) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
       height: 3,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.mainColor,
+        color: color,
         borderRadius: BorderRadius.circular(50),
       ),
     );
@@ -169,8 +155,6 @@ class ShowTasks extends StatelessWidget {
 
                       if (response == 'rated') {
                         cubit.getTasks();
-                      } else {
-
                       }
                     },
                     onDetailsPressed: () {
@@ -245,11 +229,12 @@ class TaskCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-          color: isDark ? AppColors.darkMainColor : Colors.white,
+          color: isDark ? AppColors.darkSecondGrayColor : AppColors.lightGrayBackGroundColor,
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-                color: isDark ? Colors.grey.shade700 : Colors.grey.shade400,
+                color: isDark ? AppColors.darkShadowColor : AppColors
+                    .lightShadowColor,
                 blurRadius: 1,
                 spreadRadius: 1,
                 offset: const Offset(1, 1)
@@ -268,10 +253,12 @@ class TaskCard extends StatelessWidget {
                   taskDataModel.tasks!.description!,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 17,
-                      color: isDark ? Colors.grey.shade300 : Colors.black
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -279,19 +266,9 @@ class TaskCard extends StatelessWidget {
               taskStatus(context, isDark)
             ],
           ),
-          Container(
-            margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
-            width: double.infinity,
-            height: 0.8,
-            color: isDark ? Colors.grey[700] : Colors.grey[300],
-          ),
+          customDivider(),
           workerInfo(context, isDark),
-          Container(
-            margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
-            width: double.infinity,
-            height: 0.8,
-            color: isDark ? Colors.grey[700] : Colors.grey[300],
-          ),
+          customDivider(),
           const SizedBox(height: 10,),
           dateSection(
             isDark: isDark,
@@ -303,8 +280,7 @@ class TaskCard extends StatelessWidget {
           dateSection(
               isDark: isDark,
               icon: FontAwesomeIcons.clock,
-              title: "${taskDataModel.tasks!.startTime!} - ${taskDataModel
-                  .tasks!.endTime!}"
+              title: "${taskDataModel.tasks!.startTime!} - ${taskDataModel.tasks!.endTime!}"
           ),
           const SizedBox(height: 10,),
           Row(
@@ -315,7 +291,13 @@ class TaskCard extends StatelessWidget {
                 Expanded(
                   flex: 5,
                   child: MyButton(
-                    background: taskDataModel.tasks!.status == "pending" ?isDark?AppColors.errorColor: AppColors.accentColor : AppColors.errorColor,
+                    background:
+                    taskDataModel.tasks!.status == "pending"
+                        ? isDark
+                        ? AppColors.darkAccentColor
+                        : AppColors.lightAccentColor
+                        : isDark ? AppColors.darkRedColor : AppColors
+                        .lightRedColor,
                     onPressed: onCancelPressed,
                     text: taskDataModel.tasks!.status == "pending"
                         ? "Cancel".translate(context)
@@ -327,7 +309,6 @@ class TaskCard extends StatelessWidget {
                 ),
               if(taskDataModel.tasks!.status != "declined")
                 const SizedBox(width: 5,),
-
               // users can rate only the completed task and the unreviewed tasks
               if(taskDataModel.tasks!.completeTask == "complete" &&
                   taskDataModel.tasks!.reviewed == false)
@@ -338,7 +319,7 @@ class TaskCard extends StatelessWidget {
                     isUpperCase: false,
                     radius: 50,
                     height: 37,
-                    background: isDark?AppColors.darkAccentColor:AppColors.accentColor,
+                    background: isDark ? AppColors.darkAccentColor : AppColors.lightAccentColor,
                     text: 'Rate'.translate(context),
                   ),
                 ),
@@ -355,7 +336,9 @@ class TaskCard extends StatelessWidget {
                     isUpperCase: false,
                     radius: 50,
                     height: 37,
-                    background: AppColors.mainColor,
+                    background: isDark
+                        ? AppColors.darkMainGreenColor
+                        : AppColors.lightMainGreenColor,
                     text: 'Go to details'.translate(context),
                   ),
                 ),
@@ -366,38 +349,56 @@ class TaskCard extends StatelessWidget {
     );
   }
 
+  //-----------------------taskStatus----------------------------
+  Color getTaskStatusColor(String status, bool isDark) {
+    if (status == "complete") {
+      return isDark ? AppColors.darkMainGreenColor : AppColors.lightMainGreenColor;
+    } else if (status == "pending") {
+      return isDark ? AppColors.darkAccentColor : AppColors.lightAccentColor;
+    } else if (status == "declined") {
+      return isDark ? AppColors.darkRedColor : AppColors.lightRedColor;
+    } else {
+      return isDark ? AppColors.darkMainGreenColor : AppColors.lightMainGreenColor;
+    }
+  }
+
   Widget taskStatus(BuildContext context, bool isDark) {
+    String status = taskDataModel.tasks!.completeTask == "complete"
+        ? 'COMPLETED'.translate(context).toUpperCase()
+        : taskDataModel.tasks!.status!.translate(context).toUpperCase();
+    Color statusColor = getTaskStatusColor(
+        taskDataModel.tasks!.status!, isDark);
     return Chip(
       padding: EdgeInsets.zero,
-      label: Text(
-        taskDataModel.tasks!.completeTask == "complete"
-            ? 'COMPLETED'.translate(context).toUpperCase()
-            : taskDataModel.tasks!.status!.translate(context).toUpperCase(),
-        style: const TextStyle(
-          fontSize: 12, color: Colors.white,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      backgroundColor: taskDataModel.tasks!.completeTask == "complete"
-          ? AppColors.mainColor
-          : taskDataModel.tasks!.status! == "pending"
-          ? isDark ? AppColors.darkAccentColor
-          : Colors.orange
-          : taskDataModel.tasks!.status! == "declined"
-          ? isDark ? Colors.red.withOpacity(0.8)
-          : AppColors.errorColor
-          : AppColors.mainColor,
+      label: Text(status),
+      backgroundColor: statusColor,
       side: BorderSide.none,
     );
   }
 
+
+  //-------------------Custom divider----------------------------
+  Widget customDivider() {
+    return Container(
+      margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
+      width: double.infinity,
+      height: 0.8,
+      color: isDark ? AppColors.darkSecondaryTextColor : AppColors
+          .lightSecondaryTextColor,
+    );
+  }
+
+
+  //-------------------Worker and task date info ------------------
   Widget workerInfo(BuildContext context, bool isDark) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      titleTextStyle: const TextStyle(
-          fontSize: 14,
-          color: Colors.black,
-          fontWeight: FontWeight.w500
+      titleTextStyle: Theme
+          .of(context)
+          .textTheme
+          .titleMedium!
+          .copyWith(
+        fontSize: 17,
       ),
       leading: CustomCachedNetworkImage(
         imageUrl: taskDataModel.worker!.profileImage!,
@@ -408,12 +409,11 @@ class TaskCard extends StatelessWidget {
       ),
       title: Text(
         taskDataModel.worker!.name!,
-        style: TextStyle(
-            fontSize: 17,
-            color: isDark ? Colors.grey[300] : Colors.black
-        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
       subtitle: MyRatingBarIndicator(
+          isDark: isDark,
           rating: double.parse(taskDataModel.worker!.ratingAverage!),
           iconSize: 12
       ),
@@ -422,9 +422,11 @@ class TaskCard extends StatelessWidget {
           navigateTo(context,
               WorkerScreen(workerId: taskDataModel.worker!.id.toString()));
         },
-        icon: Icon(Icons.arrow_forward,
-          color: isDark ? AppColors.darkAccentColor : AppColors.accentColor,),
-        color: AppColors.mainColor,
+        icon: Icon(
+          Icons.arrow_forward,
+          color: isDark ? AppColors.darkAccentColor : AppColors
+              .lightAccentColor,),
+
       ),
     );
   }
@@ -438,17 +440,24 @@ class TaskCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(
-          icon, size: 20, color: isDark ? Colors.grey.shade500 : Colors.black,),
+            icon,
+            size: 20,
+            color: isDark ? AppColors.darkSecondaryTextColor : AppColors
+                .lightSecondaryTextColor
+        ),
         const SizedBox(width: 5,),
         Flexible(
             child: Text(
-              title,
-              maxLines: 1,
-              style: TextStyle(
-                fontSize: 12,
-                overflow: TextOverflow.ellipsis,
-                color: isDark ? Colors.grey.shade300 : Colors.black,
-              ),
+                title,
+                maxLines: 1,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleSmall!
+                    .copyWith(
+                    color: isDark ? AppColors.darkMainTextColor : AppColors
+                        .lightMainTextColor
+                )
             )
         ),
       ],

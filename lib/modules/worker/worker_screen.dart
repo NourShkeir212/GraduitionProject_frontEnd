@@ -21,25 +21,37 @@ class WorkerScreen extends StatelessWidget {
     String favoritesHasChanged = 'true';
     return BlocBuilder<AppThemeCubit,AppThemeStates>(
       builder: (context,states) {
-        bool isDark = AppThemeCubit.get(context).isDark!;
+        bool isDark = AppThemeCubit
+            .get(context)
+            .isDark!;
         return BlocProvider(
           create: (context) =>
-          AppWorkerCubit()..getWorker(id: workerId)..getReviews(id: workerId),
+          AppWorkerCubit()
+            ..getWorker(id: workerId)
+            ..getReviews(id: workerId),
           child: BlocConsumer<AppWorkerCubit, AppWorkerStates>(
             listener: (context, state) {
               if (state is AppWorkerGetReviewsErrorState) {
-                errorSnackBar(context: context, message: state.error);
+                errorSnackBar(
+                    isDark: isDark, context: context, message: state.error);
               }
               if (state is AppWorkerGetWorkerErrorState) {
-                errorSnackBar(context: context, message: state.error);
+                errorSnackBar(
+                    isDark: isDark, context: context, message: state.error);
               }
               if (state is AppWorkerAddToFavoritesSuccessState) {
                 favoritesHasChanged = 'true';
-                successSnackBar(context: context, message: 'Successfully added to favorites'.translate(context));
+                successSnackBar(isDark: isDark,
+                    context: context,
+                    message: 'Successfully added to favorites'.translate(
+                        context));
               }
               if (state is AppWorkerDeleteFromFavoritesSuccessState) {
                 favoritesHasChanged = 'true';
-                successSnackBar(context: context, message: 'Successfully removed from favorites'.translate(context));
+                successSnackBar(isDark: isDark,
+                    context: context,
+                    message: 'Successfully removed from favorites'.translate(
+                        context));
               }
             },
             builder: (context, state) {
@@ -57,15 +69,14 @@ class WorkerScreen extends StatelessWidget {
                 canPop: false,
                 child: Scaffold(
                     appBar: myAppBar(
-                      leading: IconButton(
-                          onPressed: (){
-                           Navigator.pop(context,favoritesHasChanged);
-                          },
-                          icon:  Icon(
+                        leading: IconButton(
+                            onPressed: () {
+                              Navigator.pop(context, favoritesHasChanged);
+                            },
+                            icon: Icon(
                               Icons.arrow_back,
-                            color: isDark ? Colors.grey[400] :Colors.black,
-                          )
-                      ),
+                            )
+                        ),
                         title: 'Profile Information'.translate(context),
                         actions: [
                           const MyAppBarLogo()
@@ -83,10 +94,9 @@ class WorkerScreen extends StatelessWidget {
                               child: SingleChildScrollView(
                                 physics: const BouncingScrollPhysics(),
                                 child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment
+                                      .spaceBetween,
                                   children: [
                                     if(state is AppWorkerDeleteFromFavoritesLoadingState)
                                       const LinearProgressIndicator(),
@@ -100,50 +110,72 @@ class WorkerScreen extends StatelessWidget {
                                         SizedBox(
                                             height: 150,
                                             child: ProfileInfoDataSection(
-                                              isDark: isDark,
-                                                workerModel: cubit.workerModel!.data!,
-                                              context:context
+                                                isDark: isDark,
+                                                workerModel: cubit.workerModel!
+                                                    .data!,
+                                                context: context
                                             )
                                         ),
                                         MyButton(
-                                          onPressed: () async {
-                                            await cubit.favoritesFunction(
-                                                id: int.parse(workerId),
-                                                isFavorites: isFavorites!
-                                            );
-                                          },
-                                          text: isFavorites!
-                                              ? 'Remove from favorites'.translate(context)
-                                              : 'Add to favorites'.translate(context),
-                                          background: isFavorites! ? AppColors.errorColor :isDark?Colors.grey[600]: Colors.grey[500],
+                                            onPressed: () async {
+                                              await cubit.favoritesFunction(
+                                                  id: int.parse(workerId),
+                                                  isFavorites: isFavorites!
+                                              );
+                                            },
+                                            text: isFavorites!
+                                                ? 'Remove from favorites'
+                                                .translate(context)
+                                                : 'Add to favorites'.translate(
+                                                context),
+                                            background: isFavorites! ?
+                                            isDark ? AppColors.darkAccentColor : AppColors.lightAccentColor :
+                                            isDark
+                                                ? AppColors.darkSecondGrayColor
+                                                : AppColors
+                                                .lightSecondaryTextColor
                                         ),
                                         const MyDivider(),
                                         const SizedBox(height: 5,),
-                                        if (cubit.workerModel!.data!.startTime != "" && cubit.workerModel!.data!.endTime != "")
+                                        if (cubit.workerModel!.data!
+                                            .startTime != "" &&
+                                            cubit.workerModel!.data!.endTime !=
+                                                "")
                                           WorkerInfo(
                                             isDark: isDark,
                                             title:
-                                            "${cubit.workerModel!.data!.startTime!} ->  ${cubit.workerModel!.data!.endTime!}",
+                                            "${cubit.workerModel!.data!
+                                                .startTime!} ->  ${cubit
+                                                .workerModel!.data!.endTime!}",
                                             icon: FontAwesomeIcons.clock,
                                             isWorkTime: true,
                                           ),
                                         WorkerInfo(
                                           isDark: isDark,
-                                          title:lang=="en" ? "+963 ${cubit.workerModel!.data!.phone!}" : "${cubit.workerModel!.data!.phone!} 963+ ",
+                                          title: lang == "en"
+                                              ? "+963 ${cubit.workerModel!.data!
+                                              .phone!}"
+                                              : "${cubit.workerModel!.data!
+                                              .phone!} 963+ ",
                                           icon: Icons.phone_android,
-                                          url: 'tel:+963${cubit.workerModel!.data!.phone}',
+                                          url: 'tel:+963${cubit.workerModel!
+                                              .data!.phone}',
                                         ),
                                         WorkerInfo(
                                           isDark: isDark,
-                                          title: cubit.workerModel!.data!.email!,
+                                          title: cubit.workerModel!.data!
+                                              .email!,
                                           icon: Icons.email_outlined,
                                           url:
-                                          'mailto:${cubit.workerModel!.data!.email}',
+                                          'mailto:${cubit.workerModel!.data!
+                                              .email}',
                                         ),
-                                        if (cubit.workerModel!.data!.address != "")
+                                        if (cubit.workerModel!.data!.address !=
+                                            "")
                                           WorkerInfo(
                                             isDark: isDark,
-                                            title: cubit.workerModel!.data!.address!,
+                                            title: cubit.workerModel!.data!
+                                                .address!,
                                             icon: Icons.location_on_outlined,
                                             url: 'geo:${cubit.workerModel!.data!
                                                 .address}',
@@ -154,13 +186,16 @@ class WorkerScreen extends StatelessWidget {
                                         const MyDivider(),
                                         //--------------Bio Section------------------
                                         Visibility(
-                                            visible: cubit.workerModel!.data!.bio !=
+                                            visible: cubit.workerModel!.data!
+                                                .bio !=
                                                 "",
                                             child: BioSection(
-                                              isDark: isDark,
-                                                bio: cubit.workerModel!.data!.bio!)),
+                                                isDark: isDark,
+                                                bio: cubit.workerModel!.data!
+                                                    .bio!)),
                                         Visibility(
-                                            visible: cubit.workerModel!.data!.bio !=
+                                            visible: cubit.workerModel!.data!
+                                                .bio !=
                                                 "",
                                             child: const MyDivider()),
                                         //------------Review Header Section
@@ -189,8 +224,9 @@ class WorkerScreen extends StatelessWidget {
                                   ],
                                 ),
                               ))
-                              :  Center(child: CircularProgressIndicator(color: AppColors.mainColor,))
-                              :  Center(child: CircularProgressIndicator(color: AppColors.mainColor,))),
+                              : const Center(child: CircularProgressIndicator())
+                              : const Center(
+                              child: CircularProgressIndicator())),
                     )
                 ),
               );

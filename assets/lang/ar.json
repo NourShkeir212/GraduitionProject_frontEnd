@@ -44,7 +44,7 @@
   "Review Successfully Uploaded" : "تمت إضافة مراجعتك بنجاح",
   "Please write a review" : "من فضلك قم بكتابة مراجعتك",
   "Leave your review": "اكتب مراجعتك",
-  "Send Review" :"إرسال مراجعتك",
+  "Send review" :"إرسال مراجعتك",
   "See all": "اظهار الكل",
   "RATING": "التقييم",
   "NOTIFICATION": "الإشعارات",
@@ -108,5 +108,6 @@
   "Remove from favorites" : "إزالة من المفضلة",
   "Please enter worker name" : "من فضلك قم بإدخال اسم العامل",
   "Address" : "العنوان",
-  "Add your address now" : "ادخل عنوانك الأن"
+  "Add your address now" : "ادخل عنوانك الأن",
+  "Are your sure you want to delete your account ?" : "هل انت متأكد من أنك تريد حذف حسابك ؟"
 }

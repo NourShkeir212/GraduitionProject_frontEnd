@@ -25,13 +25,13 @@ class ChangePasswordScreen extends StatelessWidget {
             listener: (context, state) {
               if (state is AppChangePasswordSuccessStates) {
                 Navigator.pop(context);
-                successSnackBar(context: context, message: "Password has been changed Successfully");
+                successSnackBar(isDark: isDark,context: context, message: "Password has been changed Successfully");
                 oldPasswordController.text = "";
                 newPasswordController.text = "";
                 newPasswordConfirmationController.text = "";
               }
               if (state is AppChangePasswordErrorStates) {
-                errorSnackBar(context: context, message: state.error);
+                errorSnackBar(isDark: isDark,context: context, message: state.error);
               }
             },
             builder: (context, state) {
@@ -40,7 +40,7 @@ class ChangePasswordScreen extends StatelessWidget {
                 appBar: myAppBar(
                     title: '',
                     actions: [
-                       MyAppBarLogo(),
+                       const MyAppBarLogo(),
                     ]
                 ),
                 body: SafeArea(
@@ -55,13 +55,11 @@ class ChangePasswordScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children:
                               [
-                                //reset password
                                 Text(
                                   'Reset Password'.translate(context),
-                                  style: TextStyle(
+                                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.accentColor,
+                                    color: isDark ?AppColors.darkAccentColor:AppColors.lightAccentColor
                                   ),
                                 ),
                                 const SizedBox(height: 30,),
@@ -112,10 +110,9 @@ class ChangePasswordScreen extends StatelessWidget {
                                 const SizedBox(height: 30,),
                                 //button
                                 state is AppChangePasswordLoadingStates
-                                    ? Center(child: CircularProgressIndicator(
-                                    color: AppColors.mainColor))
+                                    ? const Center(child: CircularProgressIndicator())
                                     : MyButton(
-                                  background: AppColors.mainColor,
+                                  background:isDark ?AppColors.darkMainGreenColor: AppColors.lightMainGreenColor,
                                   onPressed: () {
                                     if (
                                     oldPasswordController.text == "" ||

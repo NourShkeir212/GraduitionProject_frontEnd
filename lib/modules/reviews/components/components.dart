@@ -13,7 +13,7 @@ class ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 5, right: 15, bottom: 0, top: 5),
+      padding: const EdgeInsets.only(left: 5, right: 15, top: 5),
       decoration: const BoxDecoration(
         color: Colors.transparent,
       ),
@@ -27,8 +27,7 @@ class ReviewCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomCachedNetworkImage(
-                    imageUrl:
-                    reviews.user!.profileImage!,
+                    imageUrl: reviews.user!.profileImage!,
                     height: 40,
                     width: 40,
                     radius: 50,
@@ -45,16 +44,19 @@ class ReviewCard extends StatelessWidget {
                           reviews.user!.name!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: isDark ? Colors.grey.shade300 : Colors.black,
-                          ),
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(fontSize: 14),
                         ),
                         Text(
                           timeAgo(date: DateTime.parse(reviews.date!),
                               lang: lang),
-                          style:
-                          TextStyle(color: isDark ? Colors.grey[500] : Colors
-                              .grey[400], fontSize: 10),
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            fontSize: 11,
+                            color: isDark?AppColors.darkSecondaryTextColor: AppColors.darkSecondaryTextColor
+                          ),
                         ),
                       ],
                     ),
@@ -64,12 +66,13 @@ class ReviewCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: MyRatingBarIndicator(
+                  isDark: isDark,
                   rating: double.parse(reviews.rate.toString()),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(height: 5,),
           Padding(
             padding: const EdgeInsets.only(left: 5.0),
             child: Align(
@@ -77,7 +80,8 @@ class ReviewCard extends StatelessWidget {
                     .centerRight,
                 child: ExpandableTextWidget(
                   text: reviews.comment!,
-                  color: isDark ? Colors.grey[200] : Colors.black,
+                  color: isDark ? AppColors.darkMainTextColor : AppColors
+                      .lightMainTextColor,
                 )
             ),
           )
@@ -107,7 +111,7 @@ class ReviewsAndRatingSection extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-            color:isDark?AppColors.darkMainColor:Colors.grey[100],
+            color:isDark?AppColors.darkSecondGrayColor:AppColors.lightSecondaryTextColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10)
         ),
         child: Column(
@@ -119,11 +123,10 @@ class ReviewsAndRatingSection extends StatelessWidget {
                   flex: 3,
                   child: Text(
                     rating.toString(),
-                    style:  TextStyle(
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       fontSize: 50,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.grey.shade300 :Colors.black,
-                  ),),
+                    ),
+                  ),
                 ),
                 Expanded(
                   flex: 7,
@@ -133,7 +136,7 @@ class ReviewsAndRatingSection extends StatelessWidget {
                 ),
               ],
             ),
-            MyRatingBarIndicator(rating: rating,iconSize: 18),
+            MyRatingBarIndicator(rating: rating,iconSize: 18,isDark: isDark,),
           ],
         ),
       ),
@@ -160,9 +163,8 @@ class ProgressBarIndicator extends StatelessWidget {
             flex: 1,
             child: Text(
               text,
-              style:  TextStyle(
-                  fontSize: 14,
-                color: isDark ? Colors.grey.shade300 :Colors.black,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontSize: 14,
               ),
             )
         ),
@@ -173,8 +175,8 @@ class ProgressBarIndicator extends StatelessWidget {
             child: LinearProgressIndicator(
               value: value,
               minHeight: 10,
-              backgroundColor:isDark ?Colors.grey[500]: Colors.grey[400],
-              valueColor: AlwaysStoppedAnimation(AppColors.mainColor),
+              backgroundColor:isDark ?AppColors.darkSecondaryTextColor.withOpacity(0.3): AppColors.lightSecondaryTextColor.withOpacity(0.5),
+              valueColor: AlwaysStoppedAnimation(isDark?AppColors.darkMainGreenColor:AppColors.lightMainGreenColor),
               borderRadius: BorderRadius.circular(50),
             ),
           ),

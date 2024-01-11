@@ -1,14 +1,17 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hire_me/shared/Localization/app_localizations.dart';
-import 'package:hire_me/shared/var/var.dart';
+import 'package:hire_me/shared/shared_cubit/theme_cubit/cubit.dart';
+import 'package:hire_me/shared/shared_cubit/theme_cubit/states.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import '../../models/category_details_model.dart';
 import '../../models/reviews_model.dart';
 import '../constants/consts.dart';
 import '../styles/colors.dart';
+import '../var/var.dart';
 
 
 class MyAppBarLogo extends StatelessWidget {
@@ -163,7 +166,7 @@ class MyButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(
             radius,
           ),
-          color: background ?? AppColors.accentColor.withOpacity(0.8)
+          color: background ?? AppColors.lightAccentColor.withOpacity(0.8)
       ),
       child: MaterialButton(
         shape: RoundedRectangleBorder(
@@ -265,7 +268,7 @@ class MyTextField extends StatelessWidget {
         ),
         child: TextFormField(
           onChanged: onChanged,
-          cursorColor: AppColors.accentColor,
+          cursorColor:isDark?AppColors.darkAccentColor: AppColors.lightAccentColor,
           maxLines: maxLine,
           maxLength: isPhoneNumber ? 9 : null,
           obscureText: isPassword,
@@ -273,42 +276,42 @@ class MyTextField extends StatelessWidget {
           controller: controller,
           validator: validator,
           style: TextStyle(
-              color: isDark ? Colors.grey[100] : Colors.black
+              color: isDark ? AppColors.darkMainTextColor : AppColors.lightMainTextColor,
+            fontWeight: FontWeight.normal
           ),
           decoration: InputDecoration(
               prefixIcon: isWithoutPrefixIcon ? null : Icon(
                 prefixIcon,
-                color: isDark ? Colors.grey.shade500 : AppColors.textGray2Color,
+                color: isDark ? AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor,
               ),
               suffixIcon: suffix != null
                   ? IconButton(
                 onPressed: suffixPressed,
                 icon: Icon(
-                  suffix ?? Icons.clear, color: isDark ? Colors.grey[500] : AppColors.textGray2Color),
+                  suffix ?? Icons.clear, color: isDark ? AppColors.darkSecondaryTextColor :AppColors.lightSecondaryTextColor),
               ) : null,
               enabledBorder: OutlineInputBorder(
                   borderSide:  BorderSide(
-                    color: isDark ? Colors.grey.shade500 : AppColors.textGray2Color
+                    color: isDark ? AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor
                   ),
                   borderRadius: BorderRadius.circular(radius)
               ),
               errorBorder: OutlineInputBorder(
                   borderSide:  BorderSide(
-                    color: isDark ? Colors.grey.shade500 : AppColors.textGray2Color
+                    color: isDark ? AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor
                   ),
                   borderRadius: BorderRadius.circular(radius)
               ),
               focusedBorder: OutlineInputBorder(
                   borderSide:  BorderSide(
-                    color: isDark ? Colors.grey.shade500 : AppColors.textGray2Color
+                    color: isDark ? AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor
                   ),
-                  borderRadius: BorderRadius.circular(radius
-                  )
+                  borderRadius: BorderRadius.circular(radius)
               ),
               hintText: hintText,
               hintStyle: TextStyle(
                   fontSize: 14,
-                  color: isDark ? Colors.grey[500] : AppColors.textGray2Color
+                  color: isDark ? AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor
               ),
               contentPadding: const EdgeInsets.all(10)
           ),
@@ -321,12 +324,13 @@ class MyTextField extends StatelessWidget {
 //----------------------------snack bars-----------------------
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason> errorSnackBar({
   required BuildContext context,
-  required String message
+  required String message,
+  required bool isDark
 }) {
- return ScaffoldMessenger.of(context).showSnackBar(
+  return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: AppColors.errorColor,
-        content:  Text(message),
+        backgroundColor: isDark ? AppColors.darkRedColor : AppColors.lightRedColor,
+        content: Text(message),
         duration: const Duration(milliseconds: 1000),
         padding: const EdgeInsets.symmetric(
             horizontal: 10.0,
@@ -342,11 +346,12 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> errorSnackBar({
 
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason> successSnackBar({
   required BuildContext context,
-  required String message
+  required String message,
+  required bool isDark
 }) {
   return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: AppColors.mainColor,
+        backgroundColor:isDark ? AppColors.darkMainGreenColor : AppColors.lightMainGreenColor,
         content:  Text(message),
         duration: const Duration(milliseconds: 1000),
         padding: const EdgeInsets.symmetric(
@@ -363,11 +368,12 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> successSnackBar({
 
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason> warningSnackBar({
   required String message,
-  required BuildContext context
+  required BuildContext context,
+  required bool isDark,
 }) {
   return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: AppColors.mainColor,
+        backgroundColor: isDark ? AppColors.darkAccentColor : AppColors.lightAccentColor,
         content: Text(message),
         duration: const Duration(milliseconds: 1000),
         padding: const EdgeInsets.symmetric(
@@ -388,7 +394,7 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> bottomErrorSnackBar({
   }) {
   return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: AppColors.errorColor,
+        backgroundColor: AppColors.lightRedColor,
         content:  Text(title),
         duration: const Duration(milliseconds: 1000),
         padding: const EdgeInsets.symmetric(
@@ -409,9 +415,13 @@ class MyDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  const Divider(
-      color: AppColors.textGray2Color,
-      thickness: 0.5,
+    return  BlocBuilder<AppThemeCubit,AppThemeStates>(
+      builder: (context,state) {
+        return  Divider(
+          color:AppThemeCubit.get(context).isDark! ?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor,
+          thickness: 0.5,
+        );
+      }
     );
   }
 }
@@ -490,9 +500,9 @@ class _ExpandableTextWidgetState extends State<ExpandableTextWidget> {
             child: Row(
               children:
               [
-                SmallText(text: 'Show more', color: AppColors.mainColor,),
+                SmallText(text: 'Show more', color: AppColors.lightMainGreenColor,),
                 Icon(hiddenText ? Icons.arrow_drop_down : Icons.arrow_drop_up,
-                  color: AppColors.mainColor,)
+                  color: AppColors.lightMainGreenColor,)
               ],
             ),
           ),
@@ -523,7 +533,7 @@ class BigText extends StatelessWidget {
         maxLines: 1,
         overflow: overflow,
         style: TextStyle(
-            color: color ?? AppColors.textMainColor,
+            color: color ?? AppColors.lightMainTextColor,
             fontSize: size ?? 20,
             fontWeight: FontWeight.w400,
             fontFamily: 'Roboto'
@@ -604,17 +614,17 @@ Future myCustomDialog({
     animType: AnimType.topSlide,
     headerAnimationLoop: false,
     title: title,
-    titleTextStyle: TextStyle(
-      color: isDark ? Colors.grey.shade300 :Colors.black,
-      fontSize: 20
+    titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
+        fontSize: 20,
+      color: isDark ?AppColors.darkMainTextColor : AppColors.lightMainTextColor
     ),
-    descTextStyle: TextStyle(
-      color: isDark ? Colors.grey.shade300 :Colors.black,
+    descTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+      color: isDark ?AppColors.darkMainTextColor : AppColors.lightMainTextColor
     ),
     desc: desc,
-    btnCancelColor: isDark ? AppColors.darkAccentColor : AppColors.accentColor,
-    btnOkColor: AppColors.mainColor,
-    dialogBackgroundColor: isDark ? AppColors.darkMainColor : AppColors.backgroundGrayColor,
+    btnCancelColor: isDark ? AppColors.darkAccentColor : AppColors.lightAccentColor,
+    btnOkColor:  isDark ?AppColors.darkMainGreenColor:AppColors.lightMainGreenColor,
+    dialogBackgroundColor: isDark ? AppColors.darkSecondGrayColor : AppColors.lightGrayBackGroundColor,
     btnOkOnPress: btnOkOnPress,
     btnCancelOnPress: () {},
     body: isDeleteAccount ? body : null,
@@ -626,21 +636,28 @@ Future myCustomDialog({
 class MyRatingBarIndicator extends StatelessWidget {
   final double rating;
   final double? iconSize;
+  final bool isDark;
 
   const MyRatingBarIndicator({
     super.key,
     required this.rating,
-    this.iconSize
+    this.iconSize,
+    required this.isDark
   });
 
   @override
   Widget build(BuildContext context) {
     return RatingBarIndicator(
-        itemCount: 5,
-        rating: rating,
-        itemSize: iconSize ?? 14,
-        unratedColor: Colors.grey[400],
-        itemBuilder: (_, __) => Icon(Icons.star, color: AppColors.accentColor,));
+      itemCount: 5,
+      rating: rating,
+      itemSize: iconSize ?? 14,
+      unratedColor:isDark?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor.withOpacity(0.5),
+      itemBuilder: (_, __) =>
+          Icon(
+            Icons.star,
+            color: isDark ? AppColors.darkAccentColor : AppColors.lightAccentColor,
+          ),
+    );
   }
 }
 
@@ -688,8 +705,6 @@ class NoDataFount extends StatelessWidget {
   }
 }
 
-
-//------------------------------------------worker card
 class CustomCachedNetworkImage extends StatelessWidget {
   final String imageUrl;
   final double? height;
@@ -712,7 +727,6 @@ class CustomCachedNetworkImage extends StatelessWidget {
       padding: const EdgeInsets.only(left: 3.0, top: 5.0, bottom: 5.0),
       child: CachedNetworkImage(
         color: Colors.transparent,
-
         height: height ?? 130,
         width: width ?? 100,
         imageUrl: AppConstants.BASE_URL + imageUrl,
@@ -720,22 +734,55 @@ class CustomCachedNetworkImage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(radius ?? 8),
               child: Image(
+                filterQuality: FilterQuality.medium,
                 image: imageProvider,
                 fit: boxFit,
               ),
             ),
         placeholder: (context, url) =>
-            Center(
-              child: CircularProgressIndicator(
-                color: AppColors.mainColor,
-              ),
-            ),
+        const Center(
+          child: CircularProgressIndicator(
+
+          ),
+        ),
         errorWidget: (context, url, error) =>
-        const Icon(Icons.error, size: 30,),
+        const Icon(
+          Icons.error,
+          size: 30,
+        ),
       ),
     );
   }
 }
+
+class MyLiquidRefresh extends StatelessWidget {
+  final Future<void> Function() onRefresh;
+  final Widget child;
+  final bool isDark;
+  const MyLiquidRefresh({
+    super.key,
+    required this.onRefresh,
+    required this.child,
+    required this.isDark
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LiquidPullToRefresh(
+      onRefresh: onRefresh,
+      color:isDark ?AppColors.darkMainGreenColor: AppColors.lightMainGreenColor,
+      height: 100,
+      showChildOpacityTransition: false,
+      child: child,
+    );
+  }
+}
+
+
+
+
+
+
 
 class BuildWorkerInfoSection extends StatelessWidget {
   final CategoryDetailsDataModel data;
@@ -743,6 +790,7 @@ class BuildWorkerInfoSection extends StatelessWidget {
   final void Function() onWorkerInfoPressed;
   final BuildContext context;
   final bool isDark;
+
   const BuildWorkerInfoSection({
     super.key,
     required this.data,
@@ -769,48 +817,47 @@ class BuildWorkerInfoSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                data.name!,
-                maxLines: 1,
-                style:  TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                  color: isDark ? Colors.grey.shade300 :Colors.black,
-                ),
+                  data.name!,
+                  maxLines: data.bio == "" ? 2 : 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyLarge
               ),
               if(isFavorites)
                 Text(
-                  data.category!.translate(context),
-                  style: TextStyle(
-                      fontSize: 12,
-                      color:isDark ? AppColors.darkAccentColor:AppColors.accentColor
-                  ),
+                    data.category!.translate(context),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: isDark
+                            ? AppColors.darkAccentColor
+                            : AppColors.lightAccentColor
+                    )
                 ),
               Text(
-                data.availability!.translate(context),
-                style: TextStyle(
-                  fontSize: data.bio! != "" ? 12 : 14,
-                  color: data.availability == "available"
-                      ? AppColors.mainColor
-                      : AppColors.errorColor,
-                ),
+                  data.availability!.translate(context),
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    fontSize: data.bio! != "" ? 12 : 14,
+                    color: data.availability == "available"
+                        ? isDark
+                         ? AppColors.darkMainGreenColor
+                         : AppColors.lightMainGreenColor
+                        : AppColors.lightRedColor,
+                  )
               ),
               if (data.bio! != "")
                 const SizedBox(height: 3),
               if (data.bio! != "")
                 Text(
-                  data.bio!,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 3,
-                  style: TextStyle(
-                      fontSize: isFavorites ? 12 : 14,
-                      height: 1.3,
-                      color: isDark ?Colors.grey[600]: Colors.grey[500],
-                  ),
+                    data.bio!,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 3,
+                    style: Theme.of(context).textTheme.titleSmall!
                 ),
               const Spacer(),
               Padding(
                 padding: const EdgeInsets.only(bottom: 5.0),
                 child: MyRatingBarIndicator(
+                  isDark: isDark,
                   rating: double.parse(data.ratingAverage!), iconSize: 14,),
               )
             ],
@@ -850,11 +897,11 @@ class WorkerCard extends StatelessWidget {
            horizontal: 8
         ),
         decoration: BoxDecoration(
-          color:isDark ?AppColors.darkMainColor : Colors.white,
+          color:isDark ?AppColors.darkSecondGrayColor : AppColors.lightBackGroundColor,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color:isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+              color:isDark ? AppColors.darkShadowColor : AppColors.lightShadowColor,
               offset: const Offset(1, 5),
               blurRadius: 5,
               spreadRadius: 2,
@@ -881,12 +928,10 @@ class WorkerCard extends StatelessWidget {
               child: IconButton(
                 onPressed: onFavoritePressed,
                 icon: Icon(
-                  favIconCondition
-                      ? Icons.favorite
-                      : Icons.favorite_border,
+                  favIconCondition ? Icons.favorite : Icons.favorite_border,
                   size: 30,
                 ),
-                color: Colors.red,
+                color:isDark ? AppColors.darkRedColor : AppColors.lightRedColor ,
               ),
             )
           ],
@@ -914,11 +959,13 @@ class BuildUserReviewCard extends StatelessWidget {
             top: 5
         ),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.darkMainColor : Colors.white,
+          color: isDark ? AppColors.darkSecondGrayColor : AppColors
+              .lightGrayBackGroundColor,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: isDark ? Colors.grey.shade700 : Colors.grey.shade400,
+              color: isDark ? AppColors.darkShadowColor : AppColors
+                  .lightShadowColor,
               offset: const Offset(1, 5),
               blurRadius: 5,
               spreadRadius: 1,
@@ -948,22 +995,35 @@ class BuildUserReviewCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            reviews.user!.name!,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: isDark ? Colors.grey.shade300 : Colors
-                                  .black,
+                          FittedBox(
+                            child: Text(
+                              reviews.user!.name!,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                  fontSize: 14
+                              ),
                             ),
                           ),
-                          Text(
-                            timeAgo(date: DateTime.parse(reviews.date!),
-                                lang: lang),
-                            style:
-                            TextStyle(color: isDark ? Colors.grey[400] : Colors
-                                .grey[500], fontSize: 10),
-                          ),
+                          FittedBox(
+                            child: Text(
+                              timeAgo(date: DateTime.parse(reviews.date!),
+                                  lang: lang),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(
+                                  fontSize: 11
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     )
@@ -972,19 +1032,22 @@ class BuildUserReviewCard extends StatelessWidget {
                 Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: MyRatingBarIndicator(
+                      isDark: isDark,
                       rating: double.parse(reviews.rate.toString()),
                     )
                 ),
               ],
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(height: 5,),
             Padding(
               padding: const EdgeInsets.only(left: 5.0),
               child: Align(
-                  alignment: lang == "en" ? Alignment.centerLeft : Alignment.centerRight,
+                  alignment: lang == "en" ? Alignment.centerLeft : Alignment
+                      .centerRight,
                   child: ExpandableTextWidget(
                       text: reviews.comment!,
-                    color: isDark ? Colors.grey[200] :Colors.black,
+                      color: isDark ? AppColors.darkMainTextColor : AppColors
+                          .lightMainTextColor
                   )
               ),
             )
@@ -994,27 +1057,3 @@ class BuildUserReviewCard extends StatelessWidget {
     );
   }
 }
-
-class MyLiquidRefresh extends StatelessWidget {
-  final Future<void> Function() onRefresh;
-  final Widget child;
-
-  const MyLiquidRefresh({
-    super.key,
-    required this.onRefresh,
-    required this.child
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return LiquidPullToRefresh(
-      onRefresh: onRefresh,
-      color: AppColors.mainColor,
-      height: 100,
-      showChildOpacityTransition: false,
-      child: child,
-    );
-  }
-}
-
-

@@ -24,13 +24,10 @@ void  main()async {
   //LocalNotifications().initializeNotification();
 
   lang = CacheHelper.getData(key: "LOCALE") ?? "en";
-  if (kDebugMode) {
-    print(lang);
-  }
   await initializeDateFormatting(lang, null);
 
-  bool isDark = CacheHelper.getData(key: 'isDark');
-  print(isDark);
+  bool isDark = CacheHelper.getData(key: 'isDark')??false;
+
 //to prevent the mobile rotate
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

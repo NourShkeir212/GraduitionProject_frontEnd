@@ -22,11 +22,11 @@ class TopWidget extends StatelessWidget {
       child: Container(
         height: 300,
         decoration: BoxDecoration(
-          color: isDark ? AppColors.darkMainColor :AppColors.mainColor,
+          color: isDark ? AppColors.darkSecondGrayColor :AppColors.lightMainGreenColor,
         ),
         child: Container(
           padding:  const EdgeInsets.only(top: 90, left: 20),
-          color:isDark ? AppColors.darkMainColor :AppColors.mainColor,
+          color:isDark ? AppColors.darkSecondGrayColor :AppColors.lightMainGreenColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -35,18 +35,18 @@ class TopWidget extends StatelessWidget {
                 child: RichText(
                   text: TextSpan(
                       text: isSignUpScreen ? 'Welcome to'.translate(context) : "Welcome".translate(context),
-                      style:  TextStyle(
+                      style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                        color: isDark ?AppColors.darkAccentColor: AppColors.lightAccentColor,
                         fontSize: 25,
-                        letterSpacing: 2,
-                        color:isDark ?AppColors.darkAccentColor: AppColors.accentColor
+                        letterSpacing: 2
                       ),
                       children: [
                         TextSpan(
                           text: isSignUpScreen ?  ' HireMe,'.translate(context)  : ' Back,'.translate(context),
-                          style:  TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ?Colors.grey[300]: Colors.white,
+                          style:  Theme.of(context).textTheme.headlineLarge!.copyWith(
+                              color: isDark ?AppColors.darkSecondaryTextColor: AppColors.darkMainTextColor,
+                              fontSize: 25,
+                              letterSpacing: 2
                           ),
                         ),
                       ]
@@ -60,7 +60,7 @@ class TopWidget extends StatelessWidget {
                   isSignUpScreen? 'SignUp to Continue'.translate(context) : 'SignIn to Continue'.translate(context),
                   style:  TextStyle(
                     letterSpacing: 1,
-                    color: isDark ?Colors.grey[300]: Colors.white,
+                    color: isDark ?AppColors.darkMainTextColor: AppColors.darkMainTextColor,
                   ),
                 ),
               )
@@ -93,7 +93,7 @@ Widget buildButtonPositioned(
             width: 90,
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-                color:isDark ? Colors.grey[800]: Colors.white,
+                color: isDark ?AppColors.darkSecondGrayColor: AppColors.lightGrayBackGroundColor,
                 borderRadius: BorderRadius.circular(50),
                 boxShadow: [
                   if(showShadow)
@@ -105,12 +105,15 @@ Widget buildButtonPositioned(
                     ),
                 ]
             ),
-            child: !showShadow ? Container(
+            child: !showShadow
+                ? Container(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
                         colors: [
-                         isDark ?AppColors.darkAccentColor.withOpacity(0.5): AppColors.accentColor.withOpacity(0.5),
-                          isDark ? Colors.red.shade600:Colors.red.shade400,
+                          isDark
+                              ? AppColors.darkAccentColor.withOpacity(0.5)
+                              : AppColors.lightAccentColor.withOpacity(0.5),
+                          isDark ? AppColors.darkRedColor : AppColors.lightRedColor
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight
@@ -126,14 +129,19 @@ Widget buildButtonPositioned(
                 ),
                 child: isSignUpScreen
                     ? states is AppAuthRegisterLoadingState
-                    ? const Center(
-                    child: CircularProgressIndicator(color: Colors.white,))
-                    : const Icon(Icons.arrow_forward, color: Colors.white)
+                    ? Center(
+                    child: CircularProgressIndicator(
+                      color: isDark ? Colors.grey[300] : Colors.white,))
+                    : Icon(Icons.arrow_forward,
+                  color: isDark ? Colors.grey[300] : Colors.white,)
                     : states is AppAuthLoginLoadingState
-                    ? const Center(
-                    child: CircularProgressIndicator(color: Colors.white,))
-                    : const Icon(Icons.arrow_forward, color: Colors.white)
-            ) : const Center(),
+                    ? Center(
+                    child: CircularProgressIndicator(
+                      color: isDark ? Colors.grey[300] : Colors.white,))
+                    : Icon(Icons.arrow_forward,
+                  color: isDark ? Colors.grey[300] : Colors.white,)
+            )
+                : const Center(),
           ),
         ),
       )
@@ -157,7 +165,7 @@ Widget signInSection(
         children:
         [
           MyTextField(
-            isDark: isDark,
+              isDark: isDark,
               hintText: 'Email address'.translate(context),
               controller: emailController,
               type: TextInputType.emailAddress,
@@ -170,7 +178,7 @@ Widget signInSection(
               }
           ),
           MyTextField(
-            isDark: isDark,
+              isDark: isDark,
               hintText: 'Password'.translate(context),
               controller: passwordController,
               type: TextInputType.visiblePassword,
@@ -193,28 +201,47 @@ Widget signInSection(
                 children: [
                   Checkbox(
                       value: cubit.isRememberMe,
-                      activeColor:isDark ?Colors.grey[500]: AppColors.textGray2Color,
-                      side: BorderSide(color: isDark ? Colors.grey.shade500: Colors.black),
+                      activeColor: isDark?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor,
+                      side: BorderSide(
+                          color: isDark?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor,),
                       onChanged: (value) {
                         cubit.rememberMe();
                       }
                   ),
-                   Text(
-                    'Remember me'.translate(context),
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: isDark ?Colors.grey[400]: AppColors.textGray1Color
+                  FittedBox(
+                    child: Text(
+                        'Remember me'.translate(context),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(
+                            fontSize: 12,
+                          color: isDark?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor
+                        )
                     ),
                   ),
                 ],
               ),
               TextButton(
                   onPressed: () {},
-                  child: Text(
-                    'Forgot your password ?'.translate(context),
-                    style: TextStyle(
-                        color: AppColors.mainColor,
-                        fontSize: 12
+                  child: FittedBox(
+                    child: Text(
+                      'Forgot your password ?'.translate(context),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .titleSmall!
+                          .copyWith(
+                          color: isDark
+                              ? AppColors.darkMainGreenColor
+                              : AppColors.lightMainGreenColor,
+                          fontSize: 12
+                      ),
                     ),
                   )
               )
@@ -243,7 +270,7 @@ Widget signUpSection({
         children:
         [
           MyTextField(
-            isDark: isDark,
+              isDark: isDark,
               hintText: 'Full name'.translate(context),
               controller: userNameController,
               type: TextInputType.name,
@@ -256,7 +283,7 @@ Widget signUpSection({
               }
           ),
           MyTextField(
-            isDark: isDark,
+              isDark: isDark,
               hintText: 'Phone number'.translate(context),
               controller: phoneController,
               type: TextInputType.phone,
@@ -270,7 +297,7 @@ Widget signUpSection({
               }
           ),
           MyTextField(
-            isDark: isDark,
+              isDark: isDark,
               hintText: 'Email address'.translate(context),
               controller: emailController,
               type: TextInputType.emailAddress,
@@ -283,7 +310,7 @@ Widget signUpSection({
               }
           ),
           MyTextField(
-            isDark: isDark,
+              isDark: isDark,
               hintText: 'Password'.translate(context),
               controller: passwordController,
               type: TextInputType.visiblePassword,
@@ -319,26 +346,28 @@ Widget signUpSection({
                         width: 30,
                         height: 30,
                         decoration: BoxDecoration(
-                            color: cubit.isMale
-                                ? isDark ?Colors.grey[600] : AppColors.textGray2Color
-                                : Colors.transparent,
+                            color: cubit.isMale ? isDark ? AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor : Colors.transparent,
                             border: Border.all(
-                              width: 1,
-                              color: isDark ?Colors.grey.shade600 : AppColors.textGray1Color,
+                                width: 1,
+                                color: isDark ? AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor
                             ),
                             borderRadius: BorderRadius.circular(15)
                         ),
                         child: Icon(
-                          Icons.man_outlined,
-                          color: cubit.isMale
-                              ? Colors.white
-                              : isDark ? Colors.grey.shade500 : AppColors.iconColor,
+                            Icons.man_outlined,
+                            color: cubit.isMale
+                                ? Colors.white
+                                : isDark
+                                ? AppColors.darkSecondaryTextColor
+                                : AppColors.lightSecondaryTextColor
                         ),
                       ),
                       Text(
                         'Male'.translate(context),
-                        style: TextStyle(
-                            color:isDark ?Colors.grey.shade600 : AppColors.textGray1Color
+                        style: Theme
+                            .of(context).textTheme.titleSmall!.copyWith(
+                            fontSize: 14,
+                          color: isDark ?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor
                         ),
                       )
                     ],
@@ -360,23 +389,33 @@ Widget signUpSection({
                         width: 30,
                         height: 30,
                         decoration: BoxDecoration(
-                            color: cubit.isMale ? Colors.transparent : isDark ?Colors.grey[600] : AppColors.textGray2Color,
+                            color: cubit.isMale ? Colors.transparent : isDark
+                                ? AppColors.darkSecondaryTextColor
+                                : AppColors.lightSecondaryTextColor,
                             border: Border.all(
-                              width: 1,
-                              color:  isDark ?Colors.grey.shade600 : AppColors.textGray1Color,
+                                width: 1,
+                                color: isDark
+                                    ? AppColors.darkSecondaryTextColor
+                                    : AppColors.lightSecondaryTextColor
                             ),
-                            borderRadius: BorderRadius
-                                .circular(15)
+                            borderRadius: BorderRadius.circular(15)
                         ),
                         child: Icon(
-                          Icons.woman_2_outlined,
-                          color: cubit.isMale ? isDark ? Colors.grey.shade500 : AppColors.iconColor : Colors.white,
+                            Icons.woman_2_outlined,
+                            color: cubit.isMale
+                                ? AppColors.lightSecondaryTextColor :Colors.white
+
                         ),
                       ),
                       Text(
                         'Female'.translate(context),
-                        style: TextStyle(
-                            color: isDark ?Colors.grey[600] : AppColors.textGray1Color
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(
+                            fontSize: 14,
+                          color: isDark?AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor
                         ),
                       )
                     ],

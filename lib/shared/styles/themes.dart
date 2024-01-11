@@ -3,52 +3,99 @@ import 'colors.dart';
 
 
 class AppThemes {
+
   static ThemeData lightTheme = ThemeData(
-      primaryColor: AppColors.mainColor,
+      primaryColor: AppColors.lightMainGreenColor,
       progressIndicatorTheme: ProgressIndicatorThemeData(
-          color: AppColors.mainColor
+          color: AppColors.lightMainGreenColor
       ),
-      scaffoldBackgroundColor: Colors.white,
+      scaffoldBackgroundColor: AppColors.lightBackGroundColor,
       appBarTheme: AppBarTheme(
           iconTheme: IconThemeData(
-            color: AppColors.mainColor,
+            color: AppColors.lightMainGreenColor,
           ),
           backgroundColor: Colors.grey[100],
           elevation: 2,
           titleTextStyle: TextStyle(
-            color: AppColors.mainColor,
+            color: AppColors.lightAccentColor,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
           actionsIconTheme: IconThemeData(
-            color: AppColors.mainColor,
+            color: AppColors.lightMainGreenColor,
           )
+      ),
+      textTheme: const TextTheme(
+          titleMedium: TextStyle(
+              color: AppColors.lightMainTextColor,
+              fontSize: 16
+          ),
+          titleSmall: TextStyle(
+            fontSize: 12,
+          ),
+          bodyLarge: TextStyle(
+              fontWeight: FontWeight.w800
+          ),
+          headlineLarge: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+              color: AppColors.lightMainTextColor
+          )
+      ),
+      chipTheme: const ChipThemeData(
+        labelStyle: TextStyle(
+          fontSize: 12, color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
       )
   );
+
+
   static ThemeData darkTheme = ThemeData(
-      primaryColor: AppColors.mainColor,
-      // Use the mainColor for dark theme
+      primaryColor: AppColors.darkMainGreenColor,
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: AppColors.darkMainColor, // Use the mainColor for dark theme
+        color: AppColors.darkMainGreenColor,
       ),
-      scaffoldBackgroundColor: AppColors.darkBackgroundColor,
-      // Use the backgroundColor for dark theme
+      scaffoldBackgroundColor: AppColors.darkBackGroundColor,
       appBarTheme: AppBarTheme(
-          iconTheme: IconThemeData(
-            color: Colors.grey[500], // Use the darkMainColor for dark theme
+        iconTheme: IconThemeData(
+            color: AppColors.darkMainGreenColor
+        ),
+        backgroundColor: AppColors.darkSecondGrayColor,
+        elevation: 2,
+        titleTextStyle: TextStyle(
+          color: AppColors.darkAccentColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+        actionsIconTheme: IconThemeData(
+          color: AppColors.darkMainGreenColor,
+        ),
+      ),
+      textTheme: TextTheme(
+          bodyLarge: TextStyle(
+              color: AppColors.darkMainTextColor,
+              fontWeight: FontWeight.w800
           ),
-          backgroundColor: AppColors.darkMainColor,
-          // Use the darkMainColor for dark theme
-          elevation: 2,
-          titleTextStyle: TextStyle(
-            color: AppColors.darkAccentColor,
-            // Use the accentColor for dark theme
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
+          titleMedium: TextStyle(
+              color: AppColors.darkMainTextColor,
+              fontSize: 16
           ),
-          actionsIconTheme: IconThemeData(
-            color: AppColors.darkAccentColor, // Use the darkAccentColor for dark theme
+          titleSmall: TextStyle(
+              fontSize: 12,
+              color: AppColors.darkSecondaryTextColor
+          ),
+          headlineLarge: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+              color: AppColors.darkMainTextColor
           )
+      ),
+      chipTheme: const ChipThemeData(
+        labelStyle: TextStyle(
+          fontSize: 12, color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
       )
   );
 

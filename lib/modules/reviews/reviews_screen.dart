@@ -18,13 +18,43 @@ class ReviewsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<ProgressBarIndicator> indicators = [];
+    reviewsModel.data!.sort((a, b) => b.reviews!.date!.compareTo(a.reviews!.date!));
+    calculateTheRatings({required List<ProgressBarIndicator> indicators, required bool isDark}) {
+      // Initialize a map to store the count of each rate
+      Map<int, int> rateCounts = {5: 0, 4: 0, 3: 0, 2: 0, 1: 0, 0: 0};
 
-    reviewsModel.data!.sort((a, b) =>
-        b.reviews!.date!.compareTo(a.reviews!.date!));
+      // Count the occurrences of each rate
+      // Count the occurrences of each rate
+      for (var review in reviewsModel.data!) {
+        int? count = rateCounts[review.reviews!.rate!];
+        if (count != null) {
+          rateCounts[review.reviews!.rate!] = count + 1;
+        } else {
+          rateCounts[review.reviews!.rate!] = 1;
+        }
+      }
+
+      // Calculate the percentage of each rate
+      Map<int, double> ratePercentages = {};
+      for (var entry in rateCounts.entries) {
+        ratePercentages[entry.key] = entry.value / reviewsModel.data!.length;
+      }
+
+      // Create a list of ProgressIndicators
+
+      for (var entry in ratePercentages.entries) {
+        indicators.add(
+            ProgressBarIndicator(
+              text: entry.key.toString(), value: entry.value, isDark: isDark,));
+      }
+    }
+
     return BlocBuilder<AppThemeCubit, AppThemeStates>(
         builder: (context, state) {
-          bool isDark = AppThemeCubit.get(context).isDark!;
-          calculateTheRatings(indicators: indicators,isDark: isDark);
+          bool isDark = AppThemeCubit
+              .get(context)
+              .isDark!;
+          calculateTheRatings(indicators: indicators, isDark: isDark);
           return Scaffold(
             appBar: myAppBar(
                 title: 'Reviews'.translate(context),
@@ -34,7 +64,7 @@ class ReviewsScreen extends StatelessWidget {
                     child: lang == "en" ? Text(
                       '(${reviewsModel.data!.length}) Reviews',
                       style: TextStyle(
-                        color: AppColors.mainColor,
+                        color: AppColors.lightMainGreenColor,
                       ),
                     ) : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5.0),
@@ -43,7 +73,7 @@ class ReviewsScreen extends StatelessWidget {
                           Text(
                             "(${reviewsModel.data!.length})",
                             style: TextStyle(
-                                color: AppColors.accentColor,
+                                color: AppColors.lightAccentColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18
                             ),
@@ -52,7 +82,7 @@ class ReviewsScreen extends StatelessWidget {
                           Text(
                             'Reviews'.translate(context),
                             style: TextStyle(
-                                color: AppColors.mainColor,
+                                color: AppColors.lightMainGreenColor,
                                 fontWeight: FontWeight.bold
                             ),
                           ),
@@ -87,7 +117,7 @@ class ReviewsScreen extends StatelessWidget {
                                   Padding(
                                     padding: const EdgeInsets.all(12.0),
                                     child: ReviewCard(
-                                      isDark :isDark,
+                                        isDark: isDark,
                                         reviews: reviewsModel.data![index]
                                             .reviews!),
                                   ),
@@ -95,9 +125,14 @@ class ReviewsScreen extends StatelessWidget {
                               );
                             },
                             separatorBuilder: (context, index) {
-                              return const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                                child: MyDivider(),
+                              return  Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 1),
+                                  width: double.infinity,
+                                  height: 1,
+                                  color: isDark?AppColors.darkSecondGrayColor : AppColors.lightSecondaryTextColor.withOpacity(0.3),
+                                )
                               );
                             },
                             itemCount: reviewsModel.data!.length
@@ -112,35 +147,6 @@ class ReviewsScreen extends StatelessWidget {
     );
   }
 
-  calculateTheRatings({required List<ProgressBarIndicator> indicators,required bool isDark}) {
-    // Initialize a map to store the count of each rate
-    Map<int, int> rateCounts = {5: 0, 4: 0, 3: 0, 2: 0, 1: 0, 0: 0};
-
-    // Count the occurrences of each rate
-    // Count the occurrences of each rate
-    for (var review in reviewsModel.data!) {
-      int? count = rateCounts[review.reviews!.rate!];
-      if (count != null) {
-        rateCounts[review.reviews!.rate!] = count + 1;
-      } else {
-        rateCounts[review.reviews!.rate!] = 1;
-      }
-    }
-
-    // Calculate the percentage of each rate
-    Map<int, double> ratePercentages = {};
-    for (var entry in rateCounts.entries) {
-      ratePercentages[entry.key] = entry.value / reviewsModel.data!.length;
-    }
-
-    // Create a list of ProgressIndicators
-
-    for (var entry in ratePercentages.entries) {
-      indicators.add(
-          ProgressBarIndicator(
-            text: entry.key.toString(), value: entry.value, isDark: isDark,));
-    }
-  }
 }
 
 

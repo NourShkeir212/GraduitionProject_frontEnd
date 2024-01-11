@@ -44,7 +44,7 @@
   "Review Successfully Uploaded" : "Review Successfully Uploaded",
   "Leave your review" : "Leave your review",
   "Please write a review" : "Please write a review",
-  "Send Review'": "Send Review'",
+  "Send review": "Send Review",
   "See all": "See all",
   "RATING": "RATING",
   "NOTIFICATION": "NOTIFICATION",
@@ -108,6 +108,7 @@
   "Remove from favorites" : "Remove from favorites",
   "Please enter worker name" : "Please enter worker name",
   "Address" : "Address",
-  "Add your address now" : "Add your address now"
+  "Add your address now" : "Add your address now",
+  "Are your sure you want to delete your account ?" : "Are your sure you want to delete your account ?"
 
 }
