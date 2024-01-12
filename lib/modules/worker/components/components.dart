@@ -1,18 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
+import 'package:hire_me/shared/var/var.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import '../../../models/reviews_model.dart';
 import '../../../models/worker_model.dart';
 import '../../../shared/components/components.dart';
-import '../../../shared/constants/consts.dart';
 import '../../../shared/styles/colors.dart';
+import '../../hire/hire_screen.dart';
 import '../../reviews/reviews_screen.dart';
 
 class ProfileInfoDataSection extends StatelessWidget {
   final WorkerDataModel workerModel;
-
-  const ProfileInfoDataSection({super.key, required this.workerModel});
+  final BuildContext context;
+  final bool isDark;
+  const ProfileInfoDataSection({super.key, required this.workerModel,required this.context,required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -42,38 +45,45 @@ class ProfileInfoDataSection extends StatelessWidget {
                             workerModel.name!,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
-                            style: TextStyle(
-                                fontSize: workerModel.profileImage !=
-                                    "images/default_user_image.jpg" ? 14 : 17,
-                                fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                fontSize: workerModel.profileImage != "images/default_user_image.jpg" ? 14 : 17,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 4,),
                         MyButton(
-                          background: workerModel.availability == "available" ? AppColors.mainColor : Colors.grey.shade400,
-                          onPressed: () {},
-                          text: 'Hire me',
+                          background: workerModel.availability == "available"
+                              ?isDark?AppColors.darkMainGreenColor: AppColors.lightMainGreenColor
+                              :isDark?AppColors.darkSecondaryTextColor:AppColors.lightSecondaryTextColor,
+                          onPressed: ()=>workerModel.availability == "available"
+                                ? Navigator.push(context, MaterialPageRoute(builder: (context)=>HireScreen()))
+                                : bottomErrorSnackBar(
+                              context: context,
+                              title: "${workerModel.name!} not available",
+                            ),
+                          text: 'Hire me'.translate(context),
                           width: 67.8,
                           height: 30,
                           radius: 50,
                           isUpperCase: false,
                           fontSize: 10,
-                          textColor: workerModel.availability == "available"
-                              ? Colors.white
-                              : Colors.black,
                         )
                       ],
                     ),
                     //category
                     Text(
-                      workerModel.category!,
-                      style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                      workerModel.category!.translate(context),
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        fontSize: 13,
+                        color: isDark ?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor
+                      ),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
                     //rating and availability
-                    _ratingAndAvailabilitySection()
+                    _ratingAndAvailabilitySection(context,isDark)
                   ],
                 ),
               ),
@@ -85,44 +95,46 @@ class ProfileInfoDataSection extends StatelessWidget {
   }
 
   Widget _buildProfileImageSection() {
-    return Visibility(
-      visible: workerModel.profileImage != "images/default_user_image.jpg",
-      replacement: const SizedBox.shrink(),
-      child: GestureDetector(
-        onTap: () {
-          workerModel.profileImage != "images/default_user_image.jpg"
-              ? Get.to(GestureDetector(
-            onTap: () {
-              Get.back();
-            },
-            child: SafeArea(
-              child: Center(
-                child: CustomCachedNetworkImage(
-                  imageUrl:workerModel.profileImage!,
-                  width: double.infinity,
-                  height: 300,
-                  radius: 5,
-                  boxFit: BoxFit.cover,
+    return SafeArea(
+      child: Visibility(
+        visible: workerModel.profileImage != "images/default_user_image.jpg",
+        replacement: const SizedBox.shrink(),
+        child: GestureDetector(
+          onTap: () {
+            workerModel.profileImage != "images/default_user_image.jpg"
+                ? navigateTo(context, GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: SafeArea(
+                child: Center(
+                  child: CustomCachedNetworkImage(
+                    imageUrl:workerModel.profileImage!,
+                    width: double.infinity,
+                    height: 300,
+                    radius: 5,
+                    boxFit: BoxFit.cover,
+                  ),
                 ),
               ),
+            ))
+                : null;
+          },
+          child: Hero(
+            tag: workerModel.profileImage!,
+            child: CustomCachedNetworkImage(
+              imageUrl:workerModel.profileImage!,
+              height: 140,
+              width: 90,
+              radius: 5,
+              boxFit: BoxFit.cover,
             ),
-          ))
-              : null;
-        },
-        child: Hero(
-          tag: workerModel.profileImage!,
-          child: CustomCachedNetworkImage(
-            imageUrl:workerModel.profileImage!,
-            height: 140,
-            width: 90,
-            radius: 5,
-            boxFit: BoxFit.cover,
           ),
         ),
       ),
     );
   }
-  Widget _ratingAndAvailabilitySection(){
+  Widget _ratingAndAvailabilitySection(BuildContext context,bool isDark){
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -131,7 +143,7 @@ class ProfileInfoDataSection extends StatelessWidget {
           child: Container(
             height: 68,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color:isDark ? AppColors.darkSecondGrayColor:AppColors.darkMainTextColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
@@ -141,21 +153,27 @@ class ProfileInfoDataSection extends StatelessWidget {
                 children: [
                   FittedBox(
                     child: Text(
-                      'RATING',
-                      style: TextStyle(
+                      'RATING'.translate(context),
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
                         fontSize: workerModel.profileImage != "images/default_user_image.jpg" ? 10 : 12,
-                        fontWeight: FontWeight.w500
+                        fontWeight: FontWeight.w500,
+                        color: isDark ?AppColors.darkMainTextColor: AppColors.lightMainTextColor
                       ),
                     ),
                   ),
                   Text(
                     //3.50 = 3.5
                     num.parse(workerModel.ratingAverage!).toStringAsFixed(1),
-                    style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ?AppColors.darkMainTextColor :AppColors.lightMainTextColor
+                    )
                   ),
-                  MyRatingBarIndicator(rating:  double.parse(workerModel.ratingAverage!),
+                  MyRatingBarIndicator(
+                    isDark: isDark,
+                    rating:  double.parse(workerModel.ratingAverage!
+                    ),
                   ),
                 ],
               ),
@@ -171,20 +189,21 @@ class ProfileInfoDataSection extends StatelessWidget {
             height: 68,
             decoration: BoxDecoration(
               color: workerModel.availability! == 'available'
-                  ? AppColors.mainColor
-                  : AppColors.accentColor,
+                  ?isDark?AppColors.darkMainGreenColor: AppColors.lightMainGreenColor
+                  : isDark ?AppColors.darkRedColor :AppColors.lightRedColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
               child: Text(
-                workerModel.availability!.toUpperCase(),
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: workerModel.profileImage !=
-                        "images/default_user_image.jpg"
-                        ? 12
-                        : 14,
-                    fontWeight: FontWeight.w900),
+                workerModel.availability!.translate(context).toUpperCase(),
+                style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  fontSize: workerModel.profileImage !=
+                          "images/default_user_image.jpg"
+                          ? lang=="ar" ? 20 :12
+                          : lang=="ar" ? 20 : 14,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.darkMainTextColor
+                ),
               ),
             ),
           ),
@@ -195,8 +214,9 @@ class ProfileInfoDataSection extends StatelessWidget {
 }
 class BioSection extends StatelessWidget {
   final String bio;
+  final bool isDark;
 
-  const BioSection({super.key, required this.bio});
+  const BioSection({super.key, required this.bio, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -204,22 +224,35 @@ class BioSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const Text(
-          'About',
-          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+        Text(
+          'About'.translate(context),
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(
+              fontSize: 17,
+              fontWeight: FontWeight.w800
+          ),
         ),
         const SizedBox(
           height: 10,
         ),
-        ExpandableTextWidget(text: bio)
+        ExpandableTextWidget(
+          text: bio,
+          color: isDark ? AppColors.darkSecondaryTextColor : AppColors
+              .lightSecondaryTextColor,
+        )
       ],
     );
   }
 }
 class ReviewHeaderSection extends StatelessWidget {
   final ReviewsModel reviewsModel;
+  final bool isDark;
 
-  const ReviewHeaderSection({super.key, required this.reviewsModel});
+  const ReviewHeaderSection(
+      {super.key, required this.reviewsModel, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -227,11 +260,18 @@ class ReviewHeaderSection extends StatelessWidget {
       mainAxisAlignment:
       MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          'Reviews',
-          style: TextStyle(
+        Text(
+          'Reviews'.translate(context),
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(
               fontSize: 17,
-              fontWeight: FontWeight.w800),
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.darkMainTextColor : AppColors
+                  .lightMainTextColor
+          ),
         ),
         TextButton(
             onPressed: () {
@@ -240,17 +280,20 @@ class ReviewHeaderSection extends StatelessWidget {
                   print('empty');
                 }
               } else {
-                Get.to(()=>ReviewsScreen(reviewsModel: reviewsModel));
+                navigateTo(context, ReviewsScreen(reviewsModel: reviewsModel));
               }
             },
             child: Row(
               children: [
                 Text(
-                  'See all',
+                  'See all'.translate(context),
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: reviewsModel.data!.isEmpty ? Colors.grey[400] : AppColors
-                          .mainColor
+                      color: reviewsModel.data!.isEmpty ?
+                      isDark ? AppColors.darkSecondaryTextColor : AppColors
+                          .lightSecondaryTextColor
+                          : isDark ? AppColors.darkMainGreenColor : AppColors
+                          .lightMainGreenColor
                   ),
                 ),
                 const SizedBox(
@@ -259,7 +302,11 @@ class ReviewHeaderSection extends StatelessWidget {
                 Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 12,
-                    color: reviewsModel.data!.isEmpty ? Colors.grey[400] : AppColors.mainColor
+                    color: reviewsModel.data!.isEmpty ?
+                    isDark ? AppColors.darkSecondaryTextColor : AppColors
+                        .lightSecondaryTextColor
+                        : isDark ? AppColors.darkMainGreenColor : AppColors
+                        .lightMainGreenColor
                 )
               ],
             ))
@@ -269,24 +316,27 @@ class ReviewHeaderSection extends StatelessWidget {
 }
 class ReviewsSection extends StatelessWidget {
   final String bio;
+  final bool isDark;
   final List<ReviewsDataModel> reviewsModel;
 
   const ReviewsSection({
     super.key,
     required this.reviewsModel,
     required this.bio,
+    required this.isDark
   });
 
   @override
   Widget build(BuildContext context) {
     reviewsModel.sort((a, b) => b.reviews!.date!.compareTo(a.reviews!.date!));
     return ListView.separated(
-        physics:const NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         addAutomaticKeepAlives: false,
         addRepaintBoundaries: false,
         itemBuilder: (context, index) {
-          return BuildUserReviewCard(reviews: reviewsModel[index].reviews!);
+          return BuildUserReviewCard(
+            reviews: reviewsModel[index].reviews!, isDark: isDark,);
         },
         separatorBuilder: (context, index) {
           return const SizedBox(height: 10);
@@ -308,6 +358,7 @@ class WorkerInfo extends StatelessWidget {
   final IconData icon;
   final String url;
   final bool isWorkTime;
+  final bool isDark;
 
   const WorkerInfo({
     super.key,
@@ -315,60 +366,72 @@ class WorkerInfo extends StatelessWidget {
     required this.icon,
     this.url = "",
     this.isWorkTime = false,
+    required this.isDark
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 5),
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.grey.withOpacity(0.1)
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: Colors.grey[300]!.withOpacity(0.7),
-            child: Icon(
-              icon,
-              color: AppColors.mainColor,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 10,),
-          Expanded(
-            flex: 10,
-            child: Text(
-              title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600
+    return InkWell(
+      onTap: () {
+        launchUrl(Uri.parse(url));
+      },
+      child: Container(
+        height: 65,
+        margin: const EdgeInsets.only(bottom: 5),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: isDark? AppColors.darkSecondGrayColor: Colors.grey[300]!.withOpacity(0.5),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: isDark?
+              AppColors.darkSecondaryTextColor.withOpacity(0.2)
+                  : AppColors.darkSecondaryTextColor.withOpacity(0.1),
+              child: Icon(
+                icon,
+                color:isDark?AppColors.darkMainGreenColor: AppColors.lightMainGreenColor,
+                size: 20,
               ),
             ),
-          ),
-          if(!isWorkTime)
-            const Spacer(),
-          if(!isWorkTime)
+            const SizedBox(width: 10,),
             Expanded(
-              flex: 1,
-              child: InkWell(
-                onTap: (){
-                  launchUrl(Uri.parse(url));
-                },
-                child: Icon(
-                  Icons.arrow_forward,
-                  color: AppColors.mainColor,
-                  size: 18,
+              flex: 10,
+              child: Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isDark?AppColors.darkMainTextColor: AppColors.lightMainTextColor
                 ),
               ),
-            )
-        ],
+            ),
+            if(!isWorkTime)
+              const Spacer(),
+            if(!isWorkTime)
+              Expanded(
+                flex: 1,
+                child: InkWell(
+                  onTap: () {
+                    launchUrl(Uri.parse(url));
+                  },
+                  child: Icon(
+                    Icons.arrow_forward,
+                    color:isDark?AppColors.darkAccentColor: AppColors.lightAccentColor,
+                    size: 20,
+                  ),
+                ),
+              )
+          ],
+        ),
       ),
     );
   }
 }
+
+

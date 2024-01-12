@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hire_me/shared/network/local/cache_helper.dart';
 import '../../../models/login_model.dart';
 import '../../../shared/constants/consts.dart';
 import '../../../shared/network/remote/dio_helper.dart';
@@ -14,7 +15,7 @@ class AppAuthCubit extends Cubit<AppAuthStates> {
 
   static AppAuthCubit get(context) => BlocProvider.of(context);
 
- late LoginModel loginModel;
+  LoginModel? _loginModel;
 
 
   void login({
@@ -30,9 +31,9 @@ class AppAuthCubit extends Cubit<AppAuthStates> {
             'password': password
           }
       );
-      if (response != null) {
-        loginModel = LoginModel.fromJson(response.data);
-        emit(AppAuthLoginSuccessState(loginModel: loginModel));
+      if (response!.statusCode == 200) {
+        _loginModel = LoginModel.fromJson(response.data);
+        emit(AppAuthLoginSuccessState(loginModel: _loginModel!));
       }
     } catch (e) {
       print(e.toString());
@@ -50,7 +51,7 @@ class AppAuthCubit extends Cubit<AppAuthStates> {
       }
     }
   }
-
+  
 
   void register({
     required String name,
@@ -71,7 +72,7 @@ class AppAuthCubit extends Cubit<AppAuthStates> {
             'password': password
           }
       );
-      if (response != null) {
+      if (response!.statusCode ==201) {
         emit(AppAuthRegisterSuccessState());
       }
     } catch (e) {

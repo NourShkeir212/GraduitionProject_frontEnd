@@ -1,16 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
 import '../../shared/components/components.dart';
 import '../../shared/styles/colors.dart';
 import 'cubit/auth_lib.dart';
 
 
 
-
-
 class TopWidget extends StatelessWidget {
-  TopWidget({Key? key,required this.isSignUpScreen}) : super(key: key);
   bool isSignUpScreen =false;
+  final bool isDark;
+  TopWidget({Key? key,required this.isSignUpScreen,required this.isDark
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -20,40 +22,46 @@ class TopWidget extends StatelessWidget {
       child: Container(
         height: 300,
         decoration: BoxDecoration(
-          color: AppColors.mainColor,
+          color: isDark ? AppColors.darkSecondGrayColor :AppColors.lightMainGreenColor,
         ),
         child: Container(
-          padding: const EdgeInsets.only(top: 90, left: 20),
-          color: AppColors.mainColor,
+          padding:  const EdgeInsets.only(top: 90, left: 20),
+          color:isDark ? AppColors.darkSecondGrayColor :AppColors.lightMainGreenColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              RichText(
-                text: TextSpan(
-                    text: isSignUpScreen ? 'Welcome to' : "Welcome",
-                    style:  TextStyle(
-                      fontSize: 25,
-                      letterSpacing: 2,
-                      color: AppColors.accentColor
-                    ),
-                    children: [
-                      TextSpan(
-                        text: isSignUpScreen ?  ' HireMe,' : ' Back,',
-                        style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: RichText(
+                  text: TextSpan(
+                      text: isSignUpScreen ? 'Welcome to'.translate(context) : "Welcome".translate(context),
+                      style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                        color: isDark ?AppColors.darkAccentColor: AppColors.lightAccentColor,
+                        fontSize: 25,
+                        letterSpacing: 2
                       ),
-                    ]
+                      children: [
+                        TextSpan(
+                          text: isSignUpScreen ?  ' HireMe,'.translate(context)  : ' Back,'.translate(context),
+                          style:  Theme.of(context).textTheme.headlineLarge!.copyWith(
+                              color: isDark ?AppColors.darkSecondaryTextColor: AppColors.darkMainTextColor,
+                              fontSize: 25,
+                              letterSpacing: 2
+                          ),
+                        ),
+                      ]
+                  ),
                 ),
               ),
               const SizedBox(height: 5,),
-              Text(
-                isSignUpScreen? 'Signup to Continue' : 'Signin to Continue',
-                style: const TextStyle(
-                  letterSpacing: 1,
-                  color: Colors.white,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(
+                  isSignUpScreen? 'SignUp to Continue'.translate(context) : 'SignIn to Continue'.translate(context),
+                  style:  TextStyle(
+                    letterSpacing: 1,
+                    color: isDark ?AppColors.darkMainTextColor: AppColors.darkMainTextColor,
+                  ),
                 ),
               )
             ],
@@ -71,11 +79,12 @@ Widget buildButtonPositioned(
       required bool isSignUpScreen,
       required  void Function()? onTap,
       required AppAuthStates states,
+      required bool isDark,
     }) {
   return Positioned(
       right: 0,
       left: 0,
-      top: isSignUpScreen ? 520 : 400,
+      top: isSignUpScreen ? 525 : 405,
       child: Center(
         child: GestureDetector(
           onTap: onTap,
@@ -84,7 +93,7 @@ Widget buildButtonPositioned(
             width: 90,
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ?AppColors.darkSecondGrayColor: AppColors.lightGrayBackGroundColor,
                 borderRadius: BorderRadius.circular(50),
                 boxShadow: [
                   if(showShadow)
@@ -93,15 +102,18 @@ Widget buildButtonPositioned(
                       spreadRadius: 1,
                       blurRadius: 10,
                       offset: const Offset(0, 1),
-                    )
+                    ),
                 ]
             ),
-            child: !showShadow ? Container(
+            child: !showShadow
+                ? Container(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
                         colors: [
-                          AppColors.accentColor.withOpacity(0.5),
-                          Colors.red.shade400,
+                          isDark
+                              ? AppColors.darkAccentColor.withOpacity(0.5)
+                              : AppColors.lightAccentColor.withOpacity(0.5),
+                          isDark ? AppColors.darkRedColor : AppColors.lightRedColor
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight
@@ -117,14 +129,19 @@ Widget buildButtonPositioned(
                 ),
                 child: isSignUpScreen
                     ? states is AppAuthRegisterLoadingState
-                    ? const Center(
-                    child: CircularProgressIndicator(color: Colors.white,))
-                    : const Icon(Icons.arrow_forward, color: Colors.white)
+                    ? Center(
+                    child: CircularProgressIndicator(
+                      color: isDark ? Colors.grey[300] : Colors.white,))
+                    : Icon(Icons.arrow_forward,
+                  color: isDark ? Colors.grey[300] : Colors.white,)
                     : states is AppAuthLoginLoadingState
-                    ? const Center(
-                    child: CircularProgressIndicator(color: Colors.white,))
-                    : const Icon(Icons.arrow_forward, color: Colors.white)
-            ) : const Center(),
+                    ? Center(
+                    child: CircularProgressIndicator(
+                      color: isDark ? Colors.grey[300] : Colors.white,))
+                    : Icon(Icons.arrow_forward,
+                  color: isDark ? Colors.grey[300] : Colors.white,)
+            )
+                : const Center(),
           ),
         ),
       )
@@ -137,6 +154,8 @@ Widget signInSection(
       required AppAuthCubit cubit,
       required TextEditingController emailController,
       required TextEditingController passwordController,
+      required BuildContext context,
+      required bool isDark
     }) {
   return SingleChildScrollView(
     physics: const BouncingScrollPhysics(),
@@ -146,19 +165,21 @@ Widget signInSection(
         children:
         [
           MyTextField(
-              hintText: 'Email Address',
+              isDark: isDark,
+              hintText: 'Email address'.translate(context),
               controller: emailController,
               type: TextInputType.emailAddress,
               prefixIcon: Icons.person,
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Email Address must not be empty";
+                  return "Please enter your email address".translate(context);
                 }
                 return null;
               }
           ),
           MyTextField(
-              hintText: 'Password',
+              isDark: isDark,
+              hintText: 'Password'.translate(context),
               controller: passwordController,
               type: TextInputType.visiblePassword,
               prefixIcon: Icons.lock,
@@ -168,7 +189,7 @@ Widget signInSection(
                   cubit.changePasswordVisibility(),
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Password must not be empty";
+                  return "Please Enter your Password".translate(context);
                 }
                 return null;
               }
@@ -180,27 +201,47 @@ Widget signInSection(
                 children: [
                   Checkbox(
                       value: cubit.isRememberMe,
-                      activeColor: AppColors.textGray2Color,
+                      activeColor: isDark?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor,
+                      side: BorderSide(
+                          color: isDark?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor,),
                       onChanged: (value) {
                         cubit.rememberMe();
                       }
                   ),
-                   Text(
-                    'Remember me',
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textGray1Color
+                  FittedBox(
+                    child: Text(
+                        'Remember me'.translate(context),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(
+                            fontSize: 12,
+                          color: isDark?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor
+                        )
                     ),
                   ),
                 ],
               ),
               TextButton(
                   onPressed: () {},
-                  child: Text(
-                    'Forgot Password ?',
-                    style: TextStyle(
-                        color: AppColors.mainColor,
-                        fontSize: 12
+                  child: FittedBox(
+                    child: Text(
+                      'Forgot your password ?'.translate(context),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .titleSmall!
+                          .copyWith(
+                          color: isDark
+                              ? AppColors.darkMainGreenColor
+                              : AppColors.lightMainGreenColor,
+                          fontSize: 12
+                      ),
                     ),
                   )
               )
@@ -218,6 +259,8 @@ Widget signUpSection({
   required TextEditingController phoneController,
   required TextEditingController passwordController,
   required AppAuthCubit cubit,
+  required BuildContext context,
+  required bool isDark
 }) {
   return SingleChildScrollView(
     physics: const BouncingScrollPhysics(),
@@ -227,32 +270,35 @@ Widget signUpSection({
         children:
         [
           MyTextField(
-              hintText: 'User Name',
+              isDark: isDark,
+              hintText: 'Full name'.translate(context),
               controller: userNameController,
               type: TextInputType.name,
               prefixIcon: Icons.person,
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Username must not be empty";
+                  return "Please Enter your full name".translate(context);
                 }
                 return null;
               }
           ),
           MyTextField(
-              hintText: 'Phone Number ',
+              isDark: isDark,
+              hintText: 'Phone number'.translate(context),
               controller: phoneController,
               type: TextInputType.phone,
               prefixIcon: Icons.phone,
               isPhoneNumber: true,
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Phone number must not be empty";
+                  return "Please enter your phone number".translate(context);
                 }
                 return null;
               }
           ),
           MyTextField(
-              hintText: 'Email Address',
+              isDark: isDark,
+              hintText: 'Email address'.translate(context),
               controller: emailController,
               type: TextInputType.emailAddress,
               prefixIcon: Icons.email,
@@ -264,7 +310,8 @@ Widget signUpSection({
               }
           ),
           MyTextField(
-              hintText: 'Password',
+              isDark: isDark,
+              hintText: 'Password'.translate(context),
               controller: passwordController,
               type: TextInputType.visiblePassword,
               prefixIcon: Icons.lock,
@@ -274,7 +321,7 @@ Widget signUpSection({
                   cubit.changePasswordVisibility(),
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Password must not be empty";
+                  return "Please Enter your Password".translate(context);
                 }
                 return null;
               }
@@ -290,7 +337,6 @@ Widget signUpSection({
                 GestureDetector(
                   onTap: () {
                     cubit.gender();
-                    print(cubit.isMale);
                   },
                   child: Row(
                     children: [
@@ -300,26 +346,28 @@ Widget signUpSection({
                         width: 30,
                         height: 30,
                         decoration: BoxDecoration(
-                            color: cubit.isMale
-                                ? AppColors.textGray2Color
-                                : Colors.transparent,
+                            color: cubit.isMale ? isDark ? AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor : Colors.transparent,
                             border: Border.all(
-                              width: 1,
-                              color: AppColors.textGray1Color,
+                                width: 1,
+                                color: isDark ? AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor
                             ),
                             borderRadius: BorderRadius.circular(15)
                         ),
                         child: Icon(
-                          Icons.man_outlined,
-                          color: cubit.isMale
-                              ? Colors.white
-                              : AppColors.iconColor,
+                            Icons.man_outlined,
+                            color: cubit.isMale
+                                ? Colors.white
+                                : isDark
+                                ? AppColors.darkSecondaryTextColor
+                                : AppColors.lightSecondaryTextColor
                         ),
                       ),
                       Text(
-                        'Male',
-                        style: TextStyle(
-                            color: AppColors.textGray1Color
+                        'Male'.translate(context),
+                        style: Theme
+                            .of(context).textTheme.titleSmall!.copyWith(
+                            fontSize: 14,
+                          color: isDark ?AppColors.darkSecondaryTextColor: AppColors.lightSecondaryTextColor
                         ),
                       )
                     ],
@@ -341,25 +389,33 @@ Widget signUpSection({
                         width: 30,
                         height: 30,
                         decoration: BoxDecoration(
-                            color: cubit.isMale ? Colors
-                                .transparent : AppColors.textGray2Color,
+                            color: cubit.isMale ? Colors.transparent : isDark
+                                ? AppColors.darkSecondaryTextColor
+                                : AppColors.lightSecondaryTextColor,
                             border: Border.all(
-                              width: 1,
-                              color: AppColors.textGray1Color,
+                                width: 1,
+                                color: isDark
+                                    ? AppColors.darkSecondaryTextColor
+                                    : AppColors.lightSecondaryTextColor
                             ),
-                            borderRadius: BorderRadius
-                                .circular(15)
+                            borderRadius: BorderRadius.circular(15)
                         ),
                         child: Icon(
-                          Icons.woman_2_outlined,
-                          color: cubit.isMale ? AppColors.iconColor : Colors
-                              .white,
+                            Icons.woman_2_outlined,
+                            color: cubit.isMale
+                                ? AppColors.lightSecondaryTextColor :Colors.white
+
                         ),
                       ),
                       Text(
-                        'Female',
-                        style: TextStyle(
-                            color: AppColors.textGray1Color
+                        'Female'.translate(context),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(
+                            fontSize: 14,
+                          color: isDark?AppColors.darkSecondaryTextColor : AppColors.lightSecondaryTextColor
                         ),
                       )
                     ],

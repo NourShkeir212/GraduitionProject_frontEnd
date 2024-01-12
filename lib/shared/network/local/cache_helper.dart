@@ -1,3 +1,4 @@
+import 'package:hire_me/shared/var/var.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CacheHelper {
@@ -39,4 +40,22 @@ class CacheHelper {
   {
     return await sharedPreferences!.remove(key!);
   }
+
+   Future<String> getCachedLanguageCode() async {
+    final cachedLanguageCode = sharedPreferences!.getString("LOCALE");
+    if (cachedLanguageCode != null) {
+      lang =cachedLanguageCode;
+      return cachedLanguageCode;
+    } else {
+      lang = "en";
+      return 'en';
+    }
+  }
+
+  Future<void> cacheLanguageCode(String languageCode) async{
+    sharedPreferences!.setString('LOCALE', languageCode);
+  }
+
+
+
 }

@@ -12,7 +12,6 @@ class AppCategoryDetailsCubit extends Cubit<AppCategoryDetailsStates> {
   static AppCategoryDetailsCubit get(context) => BlocProvider.of(context);
 
   CategoryDetailsModel? workersData;
-  Map<int, bool> favorites = {};
 
 
   getCategoryDetails(String id) async {
@@ -30,6 +29,8 @@ class AppCategoryDetailsCubit extends Cubit<AppCategoryDetailsStates> {
             element.id!: element.isFavorite!
           });
         }
+        //for sort by the highest rate to lowest
+        workersData!.data!.sort((a, b) => double.parse(b.ratingAverage!).compareTo(double.parse(a.ratingAverage!)));
         emit(AppCategoryDetailsGetSuccessState());
       }
     }
@@ -42,8 +43,7 @@ class AppCategoryDetailsCubit extends Cubit<AppCategoryDetailsStates> {
   }
 
 
-
-  addToFavorites({required int id})async {
+  _addToFavorites({required int id}) async {
     try {
       emit(AppCategoryDetailsAddToFavoritesLoadingState());
       var response = await DioHelper.post(
@@ -61,7 +61,8 @@ class AppCategoryDetailsCubit extends Cubit<AppCategoryDetailsStates> {
       emit(AppCategoryDetailsAddToFavoritesErrorState(error: e.toString()));
     }
   }
-  deleteFromFavorites({required int id}) async {
+
+  _deleteFromFavorites({required int id}) async {
     try {
       emit(AppCategoryDetailsDeleteFromFavoritesLoadingState());
       favorites[id] = !favorites[id]!;
@@ -83,9 +84,9 @@ class AppCategoryDetailsCubit extends Cubit<AppCategoryDetailsStates> {
 
   favoritesFunction({required int id}) async {
     if (favorites[id] == false) {
-      addToFavorites(id: id);
+      _addToFavorites(id: id);
     } else {
-      deleteFromFavorites(id: id);
+      _deleteFromFavorites(id: id);
     }
   }
 }

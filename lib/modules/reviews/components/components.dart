@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:hire_me/shared/var/var.dart';
 import '../../../models/reviews_model.dart';
 import '../../../shared/components/components.dart';
-import '../../../shared/constants/consts.dart';
 import '../../../shared/styles/colors.dart';
 
 class ReviewCard extends StatelessWidget {
   final Reviews reviews;
-  const ReviewCard({super.key,required this.reviews});
+  final bool isDark;
+
+  const ReviewCard({super.key, required this.reviews, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 5, right: 15,bottom: 0,top: 5),
+      padding: const EdgeInsets.only(left: 5, right: 15, top: 5),
       decoration: const BoxDecoration(
         color: Colors.transparent,
       ),
@@ -25,8 +27,7 @@ class ReviewCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomCachedNetworkImage(
-                    imageUrl:
-                    reviews.user!.profileImage!,
+                    imageUrl: reviews.user!.profileImage!,
                     height: 40,
                     width: 40,
                     radius: 50,
@@ -43,11 +44,19 @@ class ReviewCard extends StatelessWidget {
                           reviews.user!.name!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(fontSize: 14),
                         ),
                         Text(
-                          timeAgo(DateTime.parse(reviews.date!)),
-                          style:
-                          TextStyle(color: Colors.grey[400], fontSize: 10),
+                          timeAgo(date: DateTime.parse(reviews.date!),
+                              lang: lang),
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            fontSize: 11,
+                            color: isDark?AppColors.darkSecondaryTextColor: AppColors.darkSecondaryTextColor
+                          ),
                         ),
                       ],
                     ),
@@ -57,17 +66,24 @@ class ReviewCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: MyRatingBarIndicator(
+                  isDark: isDark,
                   rating: double.parse(reviews.rate.toString()),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(height: 5,),
           Padding(
             padding: const EdgeInsets.only(left: 5.0),
             child: Align(
-                alignment: Alignment.centerLeft,
-                child: ExpandableTextWidget(text: reviews.comment!)),
+                alignment: lang == "en" ? Alignment.centerLeft : Alignment
+                    .centerRight,
+                child: ExpandableTextWidget(
+                  text: reviews.comment!,
+                  color: isDark ? AppColors.darkMainTextColor : AppColors
+                      .lightMainTextColor,
+                )
+            ),
           )
         ],
       ),
@@ -79,11 +95,13 @@ class ReviewsAndRatingSection extends StatelessWidget {
   final double rating;
   final int ratingCount;
   final List<ProgressBarIndicator> indicators;
+  final bool isDark;
   const ReviewsAndRatingSection({
     super.key,
     required this.rating,
     required this.ratingCount,
-    required this.indicators
+    required this.indicators,
+    required this.isDark
   });
 
   @override
@@ -93,7 +111,7 @@ class ReviewsAndRatingSection extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-            color:Colors.grey[100],
+            color:isDark?AppColors.darkSecondGrayColor:AppColors.lightSecondaryTextColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10)
         ),
         child: Column(
@@ -103,10 +121,12 @@ class ReviewsAndRatingSection extends StatelessWidget {
               children: [
                 Expanded(
                   flex: 3,
-                  child: Text(rating.toString(), style: const TextStyle(
+                  child: Text(
+                    rating.toString(),
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       fontSize: 50,
-                      fontWeight: FontWeight.bold
-                  ),),
+                    ),
+                  ),
                 ),
                 Expanded(
                   flex: 7,
@@ -116,7 +136,7 @@ class ReviewsAndRatingSection extends StatelessWidget {
                 ),
               ],
             ),
-            MyRatingBarIndicator(rating: rating,iconSize: 18,),
+            MyRatingBarIndicator(rating: rating,iconSize: 18,isDark: isDark,),
           ],
         ),
       ),
@@ -124,14 +144,15 @@ class ReviewsAndRatingSection extends StatelessWidget {
   }
 }
 
-
 class ProgressBarIndicator extends StatelessWidget {
   final String text;
   final double value;
+  final bool isDark;
   const ProgressBarIndicator({
     super.key,
     required this.text,
-    required this.value
+    required this.value,
+    required this.isDark
   });
 
   @override
@@ -140,9 +161,11 @@ class ProgressBarIndicator extends StatelessWidget {
       children: [
         Expanded(
             flex: 1,
-            child:  Text(
+            child: Text(
               text,
-              style: const TextStyle(fontSize: 14),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontSize: 14,
+              ),
             )
         ),
         Expanded(
@@ -152,8 +175,8 @@ class ProgressBarIndicator extends StatelessWidget {
             child: LinearProgressIndicator(
               value: value,
               minHeight: 10,
-              backgroundColor: Colors.grey[400],
-              valueColor: AlwaysStoppedAnimation(AppColors.mainColor),
+              backgroundColor:isDark ?AppColors.darkSecondaryTextColor.withOpacity(0.3): AppColors.lightSecondaryTextColor.withOpacity(0.5),
+              valueColor: AlwaysStoppedAnimation(isDark?AppColors.darkMainGreenColor:AppColors.lightMainGreenColor),
               borderRadius: BorderRadius.circular(50),
             ),
           ),

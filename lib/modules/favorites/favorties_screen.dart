@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
+import 'package:hire_me/shared/Localization/app_localizations.dart';
 import '../../shared/components/components.dart';
-import '../../shared/styles/colors.dart';
+import '../../shared/shared_cubit/theme_cubit/cubit.dart';
+import '../../shared/shared_cubit/theme_cubit/states.dart';
 import '../worker/worker_screen.dart';
 import 'favorites_lib.dart';
 
@@ -11,75 +12,97 @@ class FavoritesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-      AppFavoritesCubit()..getFavorites(),
-      child: BlocConsumer<AppFavoritesCubit, AppFavoritesStates>(
-          listener: (context, state) {
-            if (state is AppFavoritesDeleteErrorState) {
-              errorSnackBar(message: state.error);
-            }
-            if (state is AppFavoritesDeleteSuccessState) {
-              successSnackBar(message: "Removed from favorites successfully");
-            }
-          },
-          builder: (context, state) {
-            var cubit = AppFavoritesCubit.get(context);
-            //for sort by the highest rate to lowest
-            if (cubit.workersData != null) {
-              cubit.workersData!.data!.sort((a, b) =>
-                  double.parse(b.ratingAverage!).compareTo(
-                      double.parse(a.ratingAverage!)));
-            }
-            return MainBackGroundImage(
-                child: state is AppFavoritesGetLoadingState ?
-                Center(
-                    child: CircularProgressIndicator(
-                        color: AppColors.mainColor))
-                    :
-                cubit.workersData != null ?
-                Column(
-                  children: [
-                    if(state is AppFavoritesDeleteLoadingState)
-                      LinearProgressIndicator(color: AppColors.mainColor,),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 16),
-                      child: ListView.separated(
-                          physics: const ClampingScrollPhysics(),
-                          addAutomaticKeepAlives: false,
-                          addRepaintBoundaries: false,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return WorkerCard(
-                              onPressed: () {
-                                Get.to(() =>
-                                    WorkerScreen(workerId: cubit.workersData!
-                                        .data![index].id.toString()));
-                              },
-                              data: cubit.workersData!.data![index],
-                              favIconCondition: true,
-                              onFavoritePressed: () {
-                                cubit.deleteFromFavorites(
-                                    id: cubit.workersData!.data![index].id!);
-                                cubit.workersData!.data!.removeAt(index);
-                              },
-                              isFavorites: true,
-                            );
-                            return Container();
-                          },
-                          separatorBuilder: (context, index) {
-                            return const SizedBox(height: 5,);
-                          },
-                          itemCount: cubit.workersData!.data!.length
-                      ),
-                    )
-                  ],
-                ) :
-                const Center(child: NoDataFount(message: "You don't have any worker in your favorites",),)
-            );
-          }
-      ),
+    return BlocBuilder<AppThemeCubit, AppThemeStates>(
+        builder: (context, state) {
+          bool isDark = AppThemeCubit
+              .get(context)
+              .isDark!;
+          return BlocProvider(
+            create: (context) =>
+            AppFavoritesCubit()
+              ..getFavorites(),
+            child: BlocConsumer<AppFavoritesCubit, AppFavoritesStates>(
+                listener: (context, state) {
+                  if (state is AppFavoritesDeleteErrorState) {
+                    errorSnackBar(
+                        isDark: isDark, context: context, message: state.error);
+                  }
+                  if (state is AppFavoritesDeleteSuccessState) {
+                    successSnackBar(isDark: isDark, context: context,
+                        message: "Successfully removed from favorites"
+                            .translate(context));
+                  }
+                },
+                builder: (context, state) {
+                  var cubit = AppFavoritesCubit.get(context);
+
+                  return MainBackGroundImage(
+                      centerDesign: false,
+                      child: state is AppFavoritesGetLoadingState
+                          ? const Center(child: CircularProgressIndicator())
+                          : cubit.workersData != null
+                          ? Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 16),
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: Column(
+                            children: [
+                              if(state is AppFavoritesDeleteLoadingState)
+                                const LinearProgressIndicator(),
+                              ListView.separated(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  addAutomaticKeepAlives: false,
+                                  addRepaintBoundaries: false,
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    return WorkerCard(
+                                      isDark: isDark,
+                                      context: context,
+                                      onPressed: () async {
+                                        var response = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                WorkerScreen(
+                                                  workerId: cubit.workersData!
+                                                      .data![index].id
+                                                      .toString(),
+                                                ),
+                                          ),
+                                        );
+                                        if (response == 'true') {
+                                          cubit.getFavorites();
+                                        } else {
+
+                                        }
+                                      },
+                                      data: cubit.workersData!.data![index],
+                                      favIconCondition: true,
+                                      onFavoritePressed: () {
+                                        cubit.deleteFromFavorites(
+                                            id: cubit.workersData!.data![index]
+                                                .id!);
+                                        cubit.workersData!.data!.removeAt(
+                                            index);
+                                      },
+                                      isFavorites: true,
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) {
+                                    return const SizedBox(height: 5,);
+                                  },
+                                  itemCount: cubit.workersData!.data!.length
+                              )
+                            ],
+                          ),
+                        ),
+                      ) : Container()
+                  );
+                }
+            ),
+          );
+        }
     );
   }
 }

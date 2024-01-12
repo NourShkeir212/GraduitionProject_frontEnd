@@ -59,7 +59,7 @@ class Tasks {
   String? description;
   String? status;
   String? completeTask;
-
+  bool? reviewed;
   Tasks(
       {this.date,
         this.day,
@@ -67,7 +67,9 @@ class Tasks {
         this.endTime,
         this.description,
         this.status,
-        this.completeTask});
+        this.completeTask,
+        this.reviewed
+      });
 
   Tasks.fromJson(Map<String, dynamic> json) {
     date = json['date'];
@@ -77,6 +79,7 @@ class Tasks {
     description = json['description'];
     status = json['status']??"";
     completeTask = json['complete_task'];
+    reviewed = json['reviewed'];
   }
 
   Map<String, dynamic> toJson() {
@@ -88,6 +91,7 @@ class Tasks {
     data['description'] = description;
     data['status'] = status;
     data['complete_task'] = completeTask;
+    data['reviewed'] = this.reviewed;
     return data;
   }
 }
