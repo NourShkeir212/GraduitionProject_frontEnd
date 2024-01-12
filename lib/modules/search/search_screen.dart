@@ -57,7 +57,7 @@ class SearchScreen extends StatelessWidget {
                           left: 16.0, right: 16.0, bottom: 5, top: 16),
                       child: MyTextField(
                         isDark: isDark,
-                          hintText: 'eg: Nour Shkeir',
+                          hintText: 'eg: Nour Shkeir'.translate(context),
                           controller: searchController,
                           type: TextInputType.text,
                           isWithoutPrefixIcon: true,

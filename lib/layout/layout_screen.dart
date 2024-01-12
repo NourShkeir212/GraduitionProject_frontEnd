@@ -1,13 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hire_me/shared/Localization/cubit/cubit.dart';
-import 'package:hire_me/shared/Localization/cubit/states.dart';
-import 'package:hire_me/shared/components/components.dart';
-import 'package:hire_me/shared/shared_cubit/theme_cubit/cubit.dart';
-import 'package:hire_me/shared/shared_cubit/theme_cubit/states.dart';
-import '../modules/search/search_screen.dart';
 import '../shared/constants/consts.dart';
+import '../shared/shared_cubit/theme_cubit/cubit.dart';
+import '../shared/shared_cubit/theme_cubit/states.dart';
 import '../shared/styles/colors.dart';
 import 'cubit/layout_lib.dart';
 import '../shared/Localization/app_localizations.dart';
@@ -18,9 +14,12 @@ class LayoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AppLayoutCubit(),
+      create: (context) => AppLayoutCubit()..getProfile()..getTopRatedWorkers()..getPopularCategories(),
       child: BlocConsumer<AppLayoutCubit, AppLayoutStates>(
         builder: (context, state) {
+          if(state is AppLayoutGetProfileSuccessState){
+            print("Get Profile From layoutScreen");
+          }
           List<String> screenTitle = [
             'Home'.translate(context),
             'Favorites'.translate(context),
@@ -31,9 +30,8 @@ class LayoutScreen extends StatelessWidget {
           var cubit = AppLayoutCubit.get(context);
           return BlocBuilder<AppThemeCubit, AppThemeStates>(
               builder: (context, state) {
-                bool isDark = AppThemeCubit
-                    .get(context)
-                    .isDark!;
+
+                bool isDark = AppThemeCubit.get(context).isDark!;
                 return Scaffold(
                     appBar: AppBar(
                       automaticallyImplyLeading: false,
@@ -61,16 +59,7 @@ class LayoutScreen extends StatelessWidget {
                         screenTitle[cubit.bottomNavBarCurrentIndex],
                       ),
                       actions: [
-                        IconButton(
-                          onPressed: () {
-                            navigateTo(
-                                context, const SearchScreen()
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.search,
-                          ),
-                        ),
+                        IconButton(onPressed: (){}, icon: const Icon(Icons.notifications_outlined))
                       ],
                     ),
                     bottomNavigationBar: CurvedNavigationBar(

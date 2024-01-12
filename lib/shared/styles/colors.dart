@@ -36,6 +36,24 @@ class AppColors {
   static Color darkSecondaryTextColor = Colors.grey.shade600;
   static Color darkBorderColor = Colors.grey.shade700;
 
+
+  //-----------------------------tests
+
+
+//   static Color darkBackGroundColor = HexColor("#182747"); // A very dark grey color
+//   static Color darkSecondGrayColor = HexColor("#D8D8D8"); // A dark grey color
+//
+// //  static Color darkMainGreenColor = HexColor("#3f5f47"); // A dark grey color
+//   static Color darkMainGreenColor = HexColor("#647E68"); // A dark grey color
+//
+//   static Color darkRedColor = HexColor("#CD1818"); // A dark red color
+//   static Color darkAccentColor = HexColor("D8D8D8"); // A dark accent color
+//
+//   static Color darkShadowColor = Colors.grey.shade800;
+//
+//   static Color darkMainTextColor = Colors.grey.shade300;
+//   static Color darkSecondaryTextColor = Colors.grey.shade600;
+//   static Color darkBorderColor = Colors.grey.shade700;
 }
 
 

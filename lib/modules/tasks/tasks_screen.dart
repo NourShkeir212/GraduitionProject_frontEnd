@@ -94,8 +94,7 @@ class TasksScreen extends StatelessWidget {
                             ),
                             //show scheduled task
                             Visibility(
-                              visible: cubit.tabBarIndex == 0 && cubit
-                                  .notCompletedTasks.isNotEmpty,
+                              visible: cubit.tabBarIndex == 0 && cubit.notCompletedTasks.isNotEmpty,
                               child: ShowTasks(
                                   taskDataModel: cubit.notCompletedTasks,
                                   cubit: cubit,
@@ -104,8 +103,7 @@ class TasksScreen extends StatelessWidget {
                             ),
                             //show completed task
                             Visibility(
-                              visible: cubit.tabBarIndex == 1 &&
-                                  cubit.completedTasks.isNotEmpty,
+                              visible: cubit.tabBarIndex == 1 && cubit.completedTasks.isNotEmpty,
                               child: ShowTasks(
                                 taskDataModel: cubit.completedTasks,
                                 cubit: cubit,

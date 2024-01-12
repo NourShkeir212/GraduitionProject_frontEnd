@@ -73,7 +73,7 @@ class WorkerScreen extends StatelessWidget {
                             onPressed: () {
                               Navigator.pop(context, favoritesHasChanged);
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.arrow_back,
                             )
                         ),

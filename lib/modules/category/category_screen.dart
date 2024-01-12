@@ -92,7 +92,7 @@ class BuildGridProduct extends StatelessWidget {
                   spreadRadius: 2)
             ]),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+          padding: const EdgeInsets.all(4.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

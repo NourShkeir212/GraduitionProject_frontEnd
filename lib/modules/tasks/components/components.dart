@@ -364,7 +364,7 @@ class TaskCard extends StatelessWidget {
 
   Widget taskStatus(BuildContext context, bool isDark) {
     String status = taskDataModel.tasks!.completeTask == "complete"
-        ? 'COMPLETED'.translate(context).toUpperCase()
+        ? 'Complete'.translate(context).toUpperCase()
         : taskDataModel.tasks!.status!.translate(context).toUpperCase();
     Color statusColor = getTaskStatusColor(
         taskDataModel.tasks!.status!, isDark);

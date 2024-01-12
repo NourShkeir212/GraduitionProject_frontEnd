@@ -2,10 +2,10 @@ class AppConstants {
 
 
   //Base Router Url
-  //static String BASE_URL = "http://192.168.1.41:8001/";
+  static String BASE_URL = "http://192.168.1.41:8001/";
 
   //Base Data Url
-  static String BASE_URL = "http://192.168.42.69:8001/";
+  //static String BASE_URL = "http://192.168.42.69:8001/";
 
   //AUTH
   static String REGISTER = "api/auth/user/register";
@@ -27,6 +27,7 @@ class AppConstants {
   //CATEGORIES
   static String GET_CATEGOREIS = "api/user/get_categories";
   static String GET_CATEGOREIS_DETAILS = "api/user/categories/{id}/workers";
+  static String GET_POPULAR_CATEGORIES = "api/user/popular-categories";
 
   //ADD TO FAVORITES
   static String ADD_TO_FAVORITES = "api/user/add_to_favorites";
@@ -45,6 +46,7 @@ class AppConstants {
 
   //WORKER PROFILE
   static String GET_WORKER = "api/user/worker/get_profile/{id}";
+  static String GET_TOP_RATED_WORKERS = "api/user/top-rated-workers";
 
   //SEARCH
 

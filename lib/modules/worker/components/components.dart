@@ -56,12 +56,12 @@ class ProfileInfoDataSection extends StatelessWidget {
                           background: workerModel.availability == "available"
                               ?isDark?AppColors.darkMainGreenColor: AppColors.lightMainGreenColor
                               :isDark?AppColors.darkSecondaryTextColor:AppColors.lightSecondaryTextColor,
-                          onPressed: () {
-                            workerModel.availability == "available"
-                                ? navigateTo(
-                                HireScreen(workerModel: workerModel),context)
-                                : bottomErrorSnackBar(context: context, title: "${workerModel.name!} not available",);
-                          },
+                          onPressed: ()=>workerModel.availability == "available"
+                                ? Navigator.push(context, MaterialPageRoute(builder: (context)=>HireScreen()))
+                                : bottomErrorSnackBar(
+                              context: context,
+                              title: "${workerModel.name!} not available",
+                            ),
                           text: 'Hire me'.translate(context),
                           width: 67.8,
                           height: 30,

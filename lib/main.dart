@@ -2,8 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hire_me/shared/shared_cubit/theme_cubit/states.dart';
+import 'package:hire_me/layout/cubit/cubit.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'modules/auth/cubit/cubit.dart';
 import 'modules/splash/splash_screen.dart';
 import 'shared/Localization/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -13,6 +14,7 @@ import 'shared/bloc_observer.dart';
 import 'shared/network/local/cache_helper.dart';
 import 'shared/network/remote/dio_helper.dart';
 import 'shared/shared_cubit/theme_cubit/cubit.dart';
+import 'shared/shared_cubit/theme_cubit/states.dart';
 import 'shared/styles/themes.dart';
 import 'shared/var/var.dart';
 
@@ -26,18 +28,17 @@ void  main()async {
   lang = CacheHelper.getData(key: "LOCALE") ?? "en";
   await initializeDateFormatting(lang, null);
 
-  bool isDark = CacheHelper.getData(key: 'isDark')??false;
+  bool isDark = CacheHelper.getData(key: 'isDark') ?? false;
 
 //to prevent the mobile rotate
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]).then((value) {
-    runApp(MyApp(isDark:isDark));
+    runApp(MyApp(isDark: isDark));
   });
 
   token = CacheHelper.getData(key: 'token') ?? "";
-
 
 
   // token="";
@@ -53,12 +54,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) =>
-        AppThemeCubit()
-          ..changeAppMode(fromShared: isDark)),
-        BlocProvider(create: (context) =>
-        AppLocaleCubit()
-          ..getSavedLanguage()),
+        BlocProvider(create: (context) => AppThemeCubit()..changeAppMode(fromShared: isDark)),
+        BlocProvider(create: (context) => AppLocaleCubit()..getSavedLanguage()),
       ],
       child: BlocBuilder<AppThemeCubit, AppThemeStates>(
           builder: (context, state) {

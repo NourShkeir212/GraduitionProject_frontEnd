@@ -2,13 +2,11 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_me/shared/Localization/app_localizations.dart';
-import 'package:hire_me/shared/shared_cubit/theme_cubit/cubit.dart';
-import 'package:hire_me/shared/shared_cubit/theme_cubit/states.dart';
-
-import 'package:hire_me/shared/var/var.dart';
 import '../../shared/Localization/cubit/cubit.dart';
 import '../../shared/Localization/cubit/states.dart';
 import '../../shared/components/components.dart';
+import '../../shared/shared_cubit/theme_cubit/cubit.dart';
+import '../../shared/shared_cubit/theme_cubit/states.dart';
 import '../../shared/styles/colors.dart';
 import '../auth/auth/auth_screen.dart';
 import '../change_password/change_password_screen.dart';
@@ -22,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
+    GlobalKey<ScaffoldState> scaffoldState = GlobalKey<ScaffoldState>();
     return BlocBuilder<AppThemeCubit, AppThemeStates>(
         builder: (context, state) {
           bool isDark = AppThemeCubit
@@ -46,7 +44,7 @@ class SettingsScreen extends StatelessWidget {
                 var cubit = AppSettingsCubit.get(context);
                 return SafeArea(
                   child: Scaffold(
-                    key: _scaffoldState,
+                    key: scaffoldState,
                     body: MainBackGroundImage(
                       centerDesign: false,
                       child: Padding(
@@ -91,10 +89,7 @@ class SettingsScreen extends StatelessWidget {
                                               context),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
-                                          style: Theme
-                                              .of(context)
-                                              .textTheme
-                                              .headlineLarge
+                                          style: Theme.of(context).textTheme.headlineLarge
                                       ),
                                     ),
                                     Sections(
@@ -128,12 +123,12 @@ class SettingsScreen extends StatelessWidget {
                                     context, const ChangePasswordScreen());
                               },
                               languagePressed: () {
-                                _scaffoldState.currentState!.showBottomSheet((
+                                scaffoldState.currentState!.showBottomSheet((
                                     context) => buildLanguageSection()
                                 );
                               },
                               modePressed: () {
-                                _scaffoldState.currentState!.showBottomSheet((
+                                scaffoldState.currentState!.showBottomSheet((
                                     context) => buildThemeSection(isDark)
                                 );
                               },
@@ -205,7 +200,8 @@ class SettingsScreen extends StatelessWidget {
                         radius: 6.5,
                         background: AppThemeCubit
                             .get(context).isDark! ? AppColors.darkMainGreenColor : AppColors.lightMainGreenColor,
-                        text: 'English'.translate(context)
+                        text: 'English'.translate(context),
+                        isUpperCase: false,
                       ),
                       const SizedBox(height: 10,),
                       MyButton(
@@ -215,6 +211,7 @@ class SettingsScreen extends StatelessWidget {
                         },
                         radius: 6.5,
                         text: "Arabic".translate(context),
+                        isUpperCase: false,
                       )
                     ],
                   ),
@@ -255,7 +252,8 @@ class SettingsScreen extends StatelessWidget {
                   background: AppThemeCubit.get(context).isDark!
                       ? AppColors.darkMainGreenColor
                       : AppColors.lightMainGreenColor,
-                  text: "Light Theme",
+                  text: "Light theme".translate(context),
+                  isUpperCase: false,
                 ),
                 const SizedBox(height: 10,),
                 MyButton(
@@ -266,7 +264,8 @@ class SettingsScreen extends StatelessWidget {
                   background: AppThemeCubit.get(context).isDark!
                       ? AppColors.darkAccentColor
                       : AppColors.lightAccentColor,
-                  text: "Dark theme",
+                  text: "Dark theme".translate(context),
+                  isUpperCase: false,
                 )
               ],
             ),
